@@ -2,6 +2,7 @@ import pygame
 
 from models.personaje import Personaje
 from models.enemigo import Enemigo
+from models.enemigo_bug import EnemigoNullPointer, EnemigoBucleInfinito, EnemigoVariableGlobal, EnemigoMemoryLeak, EnemigoJefe
 from models.tesoro import Tesoro
 from models.trampa_explosiva import TrampaExplosiva
 from models.armamento import Armamento
@@ -15,10 +16,12 @@ from ui import hud
 
 def crear_enemigos() -> list:
     return [
-        Enemigo("NullPointer", vida=20, ataque=6, defensa=1, tipo="terrestre", experiencia_otorgada=20, puntos_commit_otorgados=15),
-        Enemigo("Bucle Infinito", vida=25, ataque=5, defensa=2, tipo="terrestre", experiencia_otorgada=25, puntos_commit_otorgados=20),
-        Enemigo("Variable Global", vida=18, ataque=7, defensa=0, tipo="terrestre", experiencia_otorgada=18, puntos_commit_otorgados=12),
-        Enemigo("Memory Leak", vida=15, ataque=4, defensa=0, tipo="volador", experiencia_otorgada=22, puntos_commit_otorgados=18),
+        # Estos tres heredan su debilidad ("Debugger") de EnemigoBug sin redefinirla
+        EnemigoNullPointer("NullPointer", vida=20, ataque=6, defensa=1, tipo="terrestre", experiencia_otorgada=20, puntos_commit_otorgados=15),
+        EnemigoBucleInfinito("Bucle Infinito", vida=25, ataque=5, defensa=2, tipo="terrestre", experiencia_otorgada=25, puntos_commit_otorgados=20),
+        EnemigoVariableGlobal("Variable Global", vida=18, ataque=7, defensa=0, tipo="terrestre", experiencia_otorgada=18, puntos_commit_otorgados=12),
+        # Este sobreescribe DEBILIDAD ("Stack Trace") en vez de heredar la de EnemigoBug
+        EnemigoMemoryLeak("Memory Leak", vida=15, ataque=4, defensa=0, tipo="volador", experiencia_otorgada=22, puntos_commit_otorgados=18),
     ]
 
 
@@ -31,8 +34,9 @@ def crear_objetos() -> list:
 
 
 def crear_jefe() -> Enemigo:
-    return Enemigo("El Legacy Code", vida=80, ataque=12, defensa=4, tipo="terrestre",
-                    experiencia_otorgada=200, puntos_commit_otorgados=100)
+    # También sobreescribe DEBILIDAD ("Refactorizador"): solo él es vulnerable a esa arma
+    return EnemigoJefe("El Legacy Code", vida=80, ataque=12, defensa=4, tipo="terrestre",
+                        experiencia_otorgada=200, puntos_commit_otorgados=100)
 
 
 def crear_tienda() -> Tienda:
@@ -50,7 +54,8 @@ def manejar_interacciones(personaje, escenario, tienda) -> str:
     enemigo = escenario.enemigos.get(pos)
     if enemigo is not None:
         for resultado in Combate.resolver_combate_enemigo(personaje, enemigo):
-            print(f"{resultado['atacante']} ataca a {resultado['defensor']}: {resultado['daño']} de daño")
+            extra = f" ¡debilidad explotada con {resultado['debilidad_explotada']}!" if resultado["debilidad_explotada"] else ""
+            print(f"{resultado['atacante']} ataca a {resultado['defensor']}: {resultado['daño']} de daño{extra}")
         if not enemigo.esta_vivo():
             escenario.quitar_enemigo(pos)
             personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
