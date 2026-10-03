@@ -63,6 +63,9 @@ class Personaje(Entidad):
         self.defensa += 2
         self._experiencia_siguiente_nivel = int(self._experiencia_siguiente_nivel * 1.3)
 
+    def nombres_armas_equipadas(self) -> list:
+        return [a.nombre for a in self._armamento_equipado]
+
     def equipar(self, armamento) -> None:
         self._armamento_equipado.append(armamento)  # R6.3: acceso a nuevo equipamiento
         self.ataque += armamento.aumento_ataque
