@@ -1,3 +1,4 @@
+import random
 from abc import ABC, abstractmethod
 
 
@@ -62,6 +63,9 @@ class Entidad(ABC):
 
     def curar(self, cantidad: int) -> None:
         self._vida = min(self._vida_maxima, self._vida + cantidad)
+
+    def intentar_esquivar(self, probabilidad: float = 0.2) -> bool:
+        return random.random() < probabilidad  # R3.4: esquivar obstáculos del escenario
 
     @abstractmethod
     def describir(self) -> str:

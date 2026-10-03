@@ -31,6 +31,12 @@ class Personaje(Entidad):
     def recolectar(self, objeto) -> None:
         self._inventario.append(objeto)  # R3.2: recolección de objetos
 
+    def quitar_del_inventario(self, objeto) -> bool:
+        if objeto in self._inventario:
+            self._inventario.remove(objeto)
+            return True
+        return False
+
     def ganar_puntos_commit(self, cantidad: int) -> None:
         self._puntos_commit += cantidad
 
