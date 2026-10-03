@@ -9,6 +9,7 @@ from mundo.escenario import Escenario
 from mundo.tienda import Tienda
 from combate.combate import Combate
 from ui import renderizador as r
+from ui import hud
 
 
 def crear_enemigos() -> list:
@@ -36,8 +37,9 @@ def crear_tienda() -> Tienda:
     ])
 
 
-def manejar_interacciones(personaje, escenario, tienda) -> None:
+def manejar_interacciones(personaje, escenario, tienda) -> str:
     pos = personaje.posicion
+    mensaje = ""
 
     enemigo = escenario.enemigos.get(pos)
     if enemigo is not None:
@@ -47,24 +49,26 @@ def manejar_interacciones(personaje, escenario, tienda) -> None:
             escenario.quitar_enemigo(pos)
             personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
             subio = personaje.ganar_experiencia(enemigo.experiencia_otorgada)  # R6.1
-            print(f"Derrotaste a {enemigo.nombre}. +{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} puntos de commit")
+            mensaje = f"Derrotaste a {enemigo.nombre} (+{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} pts)"
             if subio:
-                print(f"¡Subiste a nivel {personaje.nivel}!")
+                mensaje = f"¡Subiste a nivel {personaje.nivel}!"
+        else:
+            mensaje = f"Combate contra {enemigo.nombre}: vida {enemigo.vida}/{enemigo.vida_maxima}"
 
     objeto = escenario.objetos.get(pos)
     if objeto is not None:
         if isinstance(objeto, Tesoro):
             personaje.ganar_puntos_commit(objeto.valor_monetario)  # R3.2
-            print(f"Recogiste {objeto.nombre}: +{objeto.valor_monetario} puntos de commit")
+            mensaje = f"Recogiste {objeto.nombre}: +{objeto.valor_monetario} puntos de commit"
         else:
             personaje.recolectar(objeto)  # R3.2
-            print(f"Recogiste {objeto.nombre}")
+            mensaje = f"Recogiste {objeto.nombre}"
         escenario.quitar_objeto(pos)
 
     if escenario.en_zona_venta(*pos):
-        print("Estás en la zona de venta. Catálogo disponible:")
-        for articulo in tienda.catalogo_para_nivel(personaje.nivel):
-            print(f"  - {articulo.describir()}")
+        mensaje = "Zona de venta: " + ", ".join(a.nombre for a in tienda.catalogo_para_nivel(personaje.nivel))
+
+    return mensaje
 
 
 def main() -> None:
@@ -78,9 +82,12 @@ def main() -> None:
     personaje = Personaje("Estudiante", x=0, y=0)
     tienda = crear_tienda()
 
-    ventana = pygame.display.set_mode((ancho * r.TAMAÑO_CELDA, alto * r.TAMAÑO_CELDA))
+    alto_px_mapa = alto * r.TAMAÑO_CELDA
+    ventana = pygame.display.set_mode((ancho * r.TAMAÑO_CELDA, alto_px_mapa + hud.ALTURA_HUD))
     pygame.display.set_caption("Depuración: El Sueño del Programador")
+    hud.inicializar_fuentes()
     reloj = pygame.time.Clock()
+    mensaje_actual = "Muévete con las flechas. Explora, combate y sube de nivel."
 
     ejecutando = True
     while ejecutando:
@@ -105,7 +112,9 @@ def main() -> None:
                     nuevo_y = max(0, min(alto - 1, personaje.posicion[1] + dy))
                     personaje.mover(nuevo_x - personaje.posicion[0], nuevo_y - personaje.posicion[1])
                     escenario.visitar(*personaje.posicion)
-                    manejar_interacciones(personaje, escenario, tienda)
+                    resultado = manejar_interacciones(personaje, escenario, tienda)
+                    if resultado:
+                        mensaje_actual = resultado  # R8.2: retroalimentación de la última acción
 
         r.dibujar_grilla(ventana, ancho, alto)
         r.dibujar_zona_venta(ventana, escenario.zona_venta)
@@ -114,6 +123,7 @@ def main() -> None:
         for pos, enemigo in escenario.enemigos.items():
             r.dibujar_enemigo(ventana, pos, enemigo)
         r.dibujar_personaje(ventana, personaje.posicion)
+        hud.dibujar_hud(ventana, ancho * r.TAMAÑO_CELDA, alto_px_mapa, personaje, mensaje_actual)
 
         pygame.display.flip()
         reloj.tick(30)
