@@ -8,6 +8,7 @@ from models.armamento import Armamento
 from mundo.escenario import Escenario
 from mundo.tienda import Tienda
 from combate.combate import Combate
+from mundo.victoria import verificar_victoria
 from ui import renderizador as r
 from ui import hud
 
@@ -27,6 +28,11 @@ def crear_objetos() -> list:
         Tesoro("Café", valor_monetario=15),
         TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12),
     ]
+
+
+def crear_jefe() -> Enemigo:
+    return Enemigo("El Legacy Code", vida=80, ataque=12, defensa=4, tipo="terrestre",
+                    experiencia_otorgada=200, puntos_commit_otorgados=100)
 
 
 def crear_tienda() -> Tienda:
@@ -79,6 +85,9 @@ def main() -> None:
     escenario.distribuir_enemigos(crear_enemigos())
     escenario.distribuir_objetos(crear_objetos())
 
+    jefe = crear_jefe()
+    escenario.colocar_jefe(jefe, (ancho - 1, alto - 1))  # posición fija: encuentro final reconocible
+
     personaje = Personaje("Estudiante", x=0, y=0)
     tienda = crear_tienda()
 
@@ -88,6 +97,7 @@ def main() -> None:
     hud.inicializar_fuentes()
     reloj = pygame.time.Clock()
     mensaje_actual = "Muévete con las flechas. Explora, combate y sube de nivel."
+    mensaje_victoria = ""
 
     ejecutando = True
     while ejecutando:
@@ -107,7 +117,7 @@ def main() -> None:
                 elif evento.key == pygame.K_ESCAPE:
                     ejecutando = False
 
-                if dx or dy:
+                if not mensaje_victoria and (dx or dy):
                     nuevo_x = max(0, min(ancho - 1, personaje.posicion[0] + dx))
                     nuevo_y = max(0, min(alto - 1, personaje.posicion[1] + dy))
                     personaje.mover(nuevo_x - personaje.posicion[0], nuevo_y - personaje.posicion[1])
@@ -115,6 +125,7 @@ def main() -> None:
                     resultado = manejar_interacciones(personaje, escenario, tienda)
                     if resultado:
                         mensaje_actual = resultado  # R8.2: retroalimentación de la última acción
+                    mensaje_victoria = verificar_victoria(personaje, escenario, jefe)  # R7.1, R7.2, R7.3
 
         r.dibujar_grilla(ventana, ancho, alto)
         r.dibujar_zona_venta(ventana, escenario.zona_venta)
@@ -124,6 +135,8 @@ def main() -> None:
             r.dibujar_enemigo(ventana, pos, enemigo)
         r.dibujar_personaje(ventana, personaje.posicion)
         hud.dibujar_hud(ventana, ancho * r.TAMAÑO_CELDA, alto_px_mapa, personaje, mensaje_actual)
+        if mensaje_victoria:
+            hud.dibujar_victoria(ventana, ancho * r.TAMAÑO_CELDA, alto_px_mapa + hud.ALTURA_HUD, mensaje_victoria)
 
         pygame.display.flip()
         reloj.tick(30)
