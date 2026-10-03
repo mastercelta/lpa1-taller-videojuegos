@@ -61,6 +61,11 @@ class Escenario:
         total = self._ancho * self._alto
         return len(self._celdas_visitadas) / total if total else 0.0
 
+    def colocar_jefe(self, jefe, pos: tuple) -> None:
+        self._enemigos.pop(pos, None)
+        self._objetos.pop(pos, None)
+        self._enemigos[pos] = jefe  # posición fija: el jefe no se mezcla con la distribución aleatoria
+
     def quitar_enemigo(self, pos: tuple) -> None:
         self._enemigos.pop(pos, None)
 
