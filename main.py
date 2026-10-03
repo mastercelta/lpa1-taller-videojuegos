@@ -7,6 +7,7 @@ from models.trampa_explosiva import TrampaExplosiva
 from models.armamento import Armamento
 from mundo.escenario import Escenario
 from mundo.tienda import Tienda
+from combate.combate import Combate
 from ui import renderizador as r
 
 
@@ -35,6 +36,37 @@ def crear_tienda() -> Tienda:
     ])
 
 
+def manejar_interacciones(personaje, escenario, tienda) -> None:
+    pos = personaje.posicion
+
+    enemigo = escenario.enemigos.get(pos)
+    if enemigo is not None:
+        for resultado in Combate.resolver_combate_enemigo(personaje, enemigo):
+            print(f"{resultado['atacante']} ataca a {resultado['defensor']}: {resultado['daño']} de daño")
+        if not enemigo.esta_vivo():
+            escenario.quitar_enemigo(pos)
+            personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
+            subio = personaje.ganar_experiencia(enemigo.experiencia_otorgada)  # R6.1
+            print(f"Derrotaste a {enemigo.nombre}. +{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} puntos de commit")
+            if subio:
+                print(f"¡Subiste a nivel {personaje.nivel}!")
+
+    objeto = escenario.objetos.get(pos)
+    if objeto is not None:
+        if isinstance(objeto, Tesoro):
+            personaje.ganar_puntos_commit(objeto.valor_monetario)  # R3.2
+            print(f"Recogiste {objeto.nombre}: +{objeto.valor_monetario} puntos de commit")
+        else:
+            personaje.recolectar(objeto)  # R3.2
+            print(f"Recogiste {objeto.nombre}")
+        escenario.quitar_objeto(pos)
+
+    if escenario.en_zona_venta(*pos):
+        print("Estás en la zona de venta. Catálogo disponible:")
+        for articulo in tienda.catalogo_para_nivel(personaje.nivel):
+            print(f"  - {articulo.describir()}")
+
+
 def main() -> None:
     pygame.init()
     ancho, alto = 14, 10
@@ -55,6 +87,25 @@ def main() -> None:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 ejecutando = False
+            elif evento.type == pygame.KEYDOWN:
+                dx, dy = 0, 0
+                if evento.key == pygame.K_UP:
+                    dy = -1
+                elif evento.key == pygame.K_DOWN:
+                    dy = 1
+                elif evento.key == pygame.K_LEFT:
+                    dx = -1
+                elif evento.key == pygame.K_RIGHT:
+                    dx = 1
+                elif evento.key == pygame.K_ESCAPE:
+                    ejecutando = False
+
+                if dx or dy:
+                    nuevo_x = max(0, min(ancho - 1, personaje.posicion[0] + dx))
+                    nuevo_y = max(0, min(alto - 1, personaje.posicion[1] + dy))
+                    personaje.mover(nuevo_x - personaje.posicion[0], nuevo_y - personaje.posicion[1])
+                    escenario.visitar(*personaje.posicion)
+                    manejar_interacciones(personaje, escenario, tienda)
 
         r.dibujar_grilla(ventana, ancho, alto)
         r.dibujar_zona_venta(ventana, escenario.zona_venta)
