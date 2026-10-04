@@ -68,6 +68,9 @@ class Escenario:
         self._objetos.pop(pos, None)
         self._enemigos[pos] = jefe  # posición fija: el jefe no se mezcla con la distribución aleatoria
 
+    def colocar_objeto(self, objeto, pos: tuple) -> None:
+        self._objetos[pos] = objeto
+
     def quitar_enemigo(self, pos: tuple) -> None:
         self._enemigos.pop(pos, None)
 
