@@ -37,18 +37,22 @@ def dibujar_hud(superficie, ancho_ventana: int, y_offset: int, personaje, mensaj
         superficie.blit(texto_mensaje, (barra_x, y_offset + ALTURA_HUD - 24))
 
 
-def dibujar_victoria(superficie, ancho_px: int, alto_px: int, mensaje: str) -> None:
+def dibujar_final(superficie, ancho_px: int, alto_px: int, resultado: str, mensaje: str) -> None:
     overlay = pygame.Surface((ancho_px, alto_px))
     overlay.set_alpha(210)
     overlay.fill((10, 10, 15))
     superficie.blit(overlay, (0, 0))
 
+    gano = resultado == "victoria"
+    titulo_texto = "¡VICTORIA!" if gano else "GAME OVER"
+    titulo_color = (120, 230, 150) if gano else (230, 90, 90)
+
     fuente_grande = pygame.font.SysFont("arial", 32, bold=True)
-    titulo = fuente_grande.render("¡VICTORIA!", True, (120, 230, 150))
+    titulo = fuente_grande.render(titulo_texto, True, titulo_color)
     superficie.blit(titulo, titulo.get_rect(center=(ancho_px // 2, alto_px // 2 - 30)))
 
     texto = _fuente.render(mensaje, True, COLOR_TEXTO)
     superficie.blit(texto, texto.get_rect(center=(ancho_px // 2, alto_px // 2 + 15)))
 
-    texto_salir = _fuente_mensaje.render("Presiona ESC para salir", True, COLOR_MENSAJE)
+    texto_salir = _fuente_mensaje.render("Presiona R para reiniciar o ESC para salir", True, COLOR_MENSAJE)
     superficie.blit(texto_salir, texto_salir.get_rect(center=(ancho_px // 2, alto_px // 2 + 50)))
