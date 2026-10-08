@@ -89,6 +89,36 @@ El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escr
 
 * **R8.2. Retroalimentación del Jugador**: El sistema debe proporcionar retroalimentación visual y auditiva clara para las acciones del jugador (ej: daño recibido, recolección de objetos, etc.).
 
+#### Requerimientos propios del juego
+
+Estos requerimientos amplían los anteriores con la historia y el mundo descritos arriba.
+
+* **R9.1. Pantalla principal**: El juego debe iniciar en un menú con las opciones Nueva partida, Cómo jugar y Salir, navegable con teclado.
+
+* **R9.2. Estados del juego**: El sistema debe manejar al menos los estados menú, jugando, minijuego, pausa y fin de partida (victoria o derrota), con transiciones claras entre ellos.
+
+* **R10.1. Movimiento fluido**: El personaje debe moverse de forma continua en cuatro direcciones y orientarse hacia la dirección de movimiento.
+
+* **R10.2. Enemigos con comportamiento**: Los enemigos deben patrullar o perseguir al jugador según su tipo; los voladores ignoran obstáculos y los terrestres no.
+
+* **R11.1. Mundo por zonas**: El mundo debe tener un hub (Escritorio) y cuatro zonas temáticas, cada una asociada a un concepto de programación.
+
+* **R11.2. Puertas con requisito**: Cada zona debe abrirse solo cuando el jugador tiene la herramienta de la zona anterior y el nivel requerido.
+
+* **R11.3. Herramientas**: Cada zona debe entregar una herramienta (Declarador, Detector de condiciones, Break, Refactorizador) que además funciona como armamento con debilidad asociada.
+
+* **R12.1. Desafío de zona**: Cada zona debe tener al menos un desafío jugable que aplique su concepto (altares de tipos, puertas condicionales, bucle con condición de parada, familias de enemigos).
+
+* **R12.2. Minijuego de zona**: Cada zona debe tener un minijuego educativo (memoria de tipos, verdadero/falso, secuencia de bucle, clasificación de clases) que otorgue experiencia y la herramienta de la zona.
+
+* **R12.3. Código en pantalla**: Cada desafío debe mostrar el fragmento de código que representa, para que la acción del jugador se relacione con el concepto.
+
+* **R13.1. Valor de la experiencia**: La experiencia debe ganarse principalmente al resolver desafíos y minijuegos, y cada zona debe entregar la suficiente para alcanzar el nivel que exige la siguiente.
+
+* **R13.2. Valor de los commits**: Vencer a un enemigo con su debilidad debe valer más commits que vencerlo sin ella, y los commits deben gastarse en la tienda y en abrir zonas.
+
+* **R13.3. Bestiario**: Cada enemigo derrotado por primera vez debe registrarse con el concepto que representa y poder consultarse desde el juego.
+
 #### Opcionales
 
 * **O1. Niveles de Dificultad**: El juego debe permitir la selección de diferentes niveles de dificultad, que afecten a los atributos de los enemigos, la cantidad de objetos y la complejidad del escenario.
