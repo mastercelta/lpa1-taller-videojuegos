@@ -22,6 +22,25 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 4.  Crear una interfaz de usuario básica que permita al jugador interactuar con el mundo del juego y visualizar la información relevante (puntos de vida, inventario, etc.).
 5.  Practicar buenas prácticas de programación como el control de versiones (Git), documentar su código.
 
+## Historia y mundo del juego
+
+Eres un estudiante de primer semestre que se quedó dormido estudiando para el parcial de programación. En el sueño, el código que escribiste a las 3 a. m. cobra vida: cada error se convirtió en un enemigo y el programa entero es un mundo roto que debes recorrer y depurar antes de que suene el despertador.
+
+El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escritorio** central (el hub) conecta con cuatro zonas. Cada zona enseña un concepto de programación, lo convierte en una mecánica de juego y entrega una **herramienta** que abre la puerta de la siguiente.
+
+| Zona | Concepto | Desafío de la zona | Minijuego | Herramienta que entrega |
+|:---|:---|:---|:---|:---|
+| 1. Valle de las Variables | variables y tipos de datos | Altares que piden un tipo: hay que llevar el ítem correcto (número, texto, booleano) | Memoria de tipos: parejas valor ↔ tipo (`42`↔`int`, `"hola"`↔`str`, `True`↔`bool`) | Declarador |
+| 2. Bosque de los Condicionales | `if` / `else`, `and` / `or` | Puertas con una condición visible (`if llave and nivel >= 2`) y caminos que se bifurcan según lo que se cumpla | Verdadero o falso: evaluar expresiones (`5 > 3 and not False`) contra reloj | Detector de condiciones |
+| 3. Laberinto de los Bucles | `while` / `for`, condición de parada | El Bucle Infinito se clona hasta que el jugador cumple la condición de parada en una palanca | Secuencia: predecir qué imprime un `for` (`range(0, 10, 3)` → `0 3 6 9`) | Break |
+| 4. Castillo de los Objetos | clases, herencia, polimorfismo | Familias de enemigos: la subclase hereda la debilidad del padre o la sobrescribe. Jefe final: **El Legacy Code** | Clasificar: ubicar cada enemigo bajo su clase padre según su debilidad | Refactorizador |
+
+**Economía con significado**
+
+- **Experiencia (XP)**: mide comprensión. Se gana al resolver los desafíos y minijuegos de cada zona (y en menor medida en combate). Cada zona entrega el XP necesario para alcanzar el nivel que exige la siguiente.
+- **Commits**: miden calidad. Vencer a un bug con su herramienta correcta (su debilidad) vale 3 commits; vencerlo a golpes vale 1. Se gastan en la tienda y para "aprobar el pull request" que abre la puerta de la siguiente zona.
+- **Bestiario**: cada bug derrotado se registra con una línea del concepto que representa.
+
 ## Requerimientos
 
 * **R1.1. Creación de Personaje Jugable**: El sistema debe permitir la creación de un personaje jugable con los siguientes atributos: Puntos de vida, Ataque, Defensa, Nivel, Inventario.
