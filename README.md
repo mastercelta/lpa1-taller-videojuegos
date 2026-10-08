@@ -186,3 +186,18 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
     python3 main.py
     ```
 
+2. Controles
+
+    | Tecla | Acción |
+    |:---|:---|
+    | Flechas | Mover al personaje / navegar menús |
+    | Enter | Confirmar en menús |
+    | R | Reiniciar la partida al terminar |
+    | ESC | Pausa o salir |
+
+3. Ejecutar las pruebas
+
+    ```bash
+    python3 -m pytest tests/ -v
+    ```
+
