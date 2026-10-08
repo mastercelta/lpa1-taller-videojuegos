@@ -1,12 +1,12 @@
-# Taller Videojuegos
+# Depuración: El Sueño del Programador
 
-![commits](https://badgen.net/github/commits/clubdecomputacion/lpa1-taller-videojuegos?icon=github) 
-![last_commit](https://img.shields.io/github/last-commit/clubdecomputacion/lpa1-taller-videojuegos)
+![commits](https://badgen.net/github/commits/mastercelta/lpa1-taller-videojuegos?icon=github) 
+![last_commit](https://img.shields.io/github/last-commit/mastercelta/lpa1-taller-videojuegos)
 - ver [badgen](https://badgen.net/) o [shields](https://shields.io/) para otros tipos de _badges_
 
 ## Autor
 
-- [@estudiante](https://github.com/estudiante)
+- [@mastercelta](https://github.com/mastercelta)
 
 ## Descripción del Proyecto
 
@@ -111,7 +111,7 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 1. Clonar el proyecto
 
     ```bash
-    git clone https://github.com/clubdecomputacion/lpa1-taller-videojuegos.git
+    git clone https://github.com/mastercelta/lpa1-taller-videojuegos.git
     cd lpa1-taller-videojuegos
     ```
 
