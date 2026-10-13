@@ -54,5 +54,5 @@ def dibujar_final(superficie, ancho_px: int, alto_px: int, resultado: str, mensa
     texto = _fuente.render(mensaje, True, COLOR_TEXTO)
     superficie.blit(texto, texto.get_rect(center=(ancho_px // 2, alto_px // 2 + 15)))
 
-    texto_salir = _fuente_mensaje.render("Presiona R para reiniciar o ESC para salir", True, COLOR_MENSAJE)
+    texto_salir = _fuente_mensaje.render("R para reiniciar, Enter para volver al menú", True, COLOR_MENSAJE)
     superficie.blit(texto_salir, texto_salir.get_rect(center=(ancho_px // 2, alto_px // 2 + 50)))
