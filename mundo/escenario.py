@@ -68,6 +68,22 @@ class Escenario:
         self._objetos.pop(pos, None)
         self._enemigos[pos] = jefe  # posición fija: el jefe no se mezcla con la distribución aleatoria
 
+    def dentro(self, pos: tuple) -> bool:
+        return 0 <= pos[0] < self._ancho and 0 <= pos[1] < self._alto
+
+    def puede_ocupar(self, pos: tuple, vuela: bool = False) -> bool:
+        # R10.2: los voladores pasan por encima de objetos y de la tienda; los terrestres no
+        if not self.dentro(pos) or pos in self._enemigos:
+            return False
+        if vuela:
+            return True
+        return pos not in self._objetos and pos != self._zona_venta
+
+    def mover_enemigo(self, desde: tuple, hasta: tuple) -> None:
+        enemigo = self._enemigos.pop(desde)
+        self._enemigos[hasta] = enemigo
+        enemigo.mirar(hasta[0] - desde[0], hasta[1] - desde[1])
+
     def colocar_objeto(self, objeto, pos: tuple) -> None:
         self._objetos[pos] = objeto
 
