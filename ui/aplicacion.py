@@ -37,12 +37,12 @@ class Aplicacion:
         self._estado.actualizar(dt)
         self._estado.dibujar(superficie)
 
-    def ejecutar(self, estado_inicial) -> None:
+    def ejecutar(self, crear_estado_inicial) -> None:
         pygame.init()
         ventana = pygame.display.set_mode(self._tamaño)
         pygame.display.set_caption(self._titulo)
         reloj = pygame.time.Clock()
-        self._estado = estado_inicial
+        self._estado = crear_estado_inicial(self)
         self._ejecutando = True
         while self._ejecutando:
             dt = reloj.tick(60) / 1000
