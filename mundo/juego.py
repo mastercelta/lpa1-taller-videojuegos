@@ -77,6 +77,7 @@ class Juego:
         x, y = self._personaje.posicion
         nuevo_x = max(0, min(self._ancho - 1, x + dx))
         nuevo_y = max(0, min(self._alto - 1, y + dy))
+        self._personaje.mirar(dx, dy)
         if (nuevo_x, nuevo_y) == (x, y):
             return
 

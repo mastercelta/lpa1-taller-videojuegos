@@ -12,6 +12,7 @@ class Entidad(ABC):
         self._defensa = defensa
         self._x = x
         self._y = y
+        self._direccion = "abajo"  # R10.1: hacia dónde mira la entidad
 
     @property
     def nombre(self) -> str:
@@ -49,7 +50,22 @@ class Entidad(ABC):
     def posicion(self) -> tuple:
         return (self._x, self._y)
 
+    @property
+    def direccion(self) -> str:
+        return self._direccion
+
+    def mirar(self, dx: int, dy: int) -> None:
+        if dx > 0:
+            self._direccion = "derecha"
+        elif dx < 0:
+            self._direccion = "izquierda"
+        elif dy > 0:
+            self._direccion = "abajo"
+        elif dy < 0:
+            self._direccion = "arriba"
+
     def mover(self, dx: int, dy: int) -> None:
+        self.mirar(dx, dy)
         self._x += dx
         self._y += dy
 
