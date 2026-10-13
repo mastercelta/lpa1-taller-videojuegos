@@ -66,9 +66,14 @@ class EstadoMenu(Estado):
         ancho, alto = superficie.get_size()
         superficie.fill(COLOR_FONDO)
 
-        for i, linea in enumerate(LINEAS_DE_FONDO):
+        # el código de fondo se reparte en dos esquinas, lejos del título y de las opciones
+        mitad = len(LINEAS_DE_FONDO) // 2
+        for i, linea in enumerate(LINEAS_DE_FONDO[:mitad]):
             texto = self._fuente_codigo.render(linea, True, COLOR_CODIGO)
-            superficie.blit(texto, (30 + (i % 2) * 300, 30 + i * 60))
+            superficie.blit(texto, (20, 15 + i * 22))
+        for i, linea in enumerate(LINEAS_DE_FONDO[mitad:]):
+            texto = self._fuente_codigo.render(linea, True, COLOR_CODIGO)
+            superficie.blit(texto, (ancho - texto.get_width() - 20, alto - 150 + i * 22))
 
         titulo = self._fuente_titulo.render("Depuración", True, COLOR_TITULO)
         superficie.blit(titulo, titulo.get_rect(center=(ancho // 2, alto // 4)))
