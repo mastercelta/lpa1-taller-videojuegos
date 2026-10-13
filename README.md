@@ -43,6 +43,10 @@ El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escr
 
 ## Requerimientos
 
+Los requerimientos se dividen en tres grupos: los del taller (obligatorios, R1 a R8), los propios del juego que salen de la historia (R9 a R13) y los opcionales (O1 a O9). Al final está el estado de avance de cada uno.
+
+#### Requerimientos del taller
+
 * **R1.1. Creación de Personaje Jugable**: El sistema debe permitir la creación de un personaje jugable con los siguientes atributos: Puntos de vida, Ataque, Defensa, Nivel, Inventario.
 
 * **R1.2. Creación de Enemigos**: El sistema debe permitir la creación de enemigos con los siguientes atributos: Puntos de vida, Ataque, Defensa, Tipo ("volador", "terrestre").
@@ -83,9 +87,9 @@ El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escr
 
 * **R7.2. Victoria por Combate Final**: El juego debe tener una condición de victoria al derrotar a un jefe final.
 
-* **R7.3. Victoria por Puntaje:**: El juego debe tener una condición de victoria al alcanzar un puntaje determinado.
+* **R7.3. Victoria por Puntaje**: El juego debe tener una condición de victoria al alcanzar un puntaje determinado.
 
-* **R8.1. Interfaz de Usuario (UI)**: sistema debe proporcionar una interfaz de usuario intuitiva y fácil de usar que muestre información relevante al jugador (puntos de vida, inventario, nivel, etc.).
+* **R8.1. Interfaz de Usuario (UI)**: El sistema debe proporcionar una interfaz de usuario intuitiva y fácil de usar que muestre información relevante al jugador (puntos de vida, inventario, nivel, etc.).
 
 * **R8.2. Retroalimentación del Jugador**: El sistema debe proporcionar retroalimentación visual y auditiva clara para las acciones del jugador (ej: daño recibido, recolección de objetos, etc.).
 
