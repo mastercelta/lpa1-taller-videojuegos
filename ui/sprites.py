@@ -18,6 +18,12 @@ NEGRO = (20, 20, 25)
 _fuentes = {}
 
 
+def inicializar_fuentes() -> None:
+    # las fuentes de pygame dejan de servir tras pygame.quit(); se limpia el caché
+    # cada vez que arranca una partida nueva
+    _fuentes.clear()
+
+
 def _fuente(tamaño: int, negrita: bool = True):
     clave = (tamaño, negrita)
     if clave not in _fuentes:
