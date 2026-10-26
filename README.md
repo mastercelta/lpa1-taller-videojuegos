@@ -222,6 +222,12 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 ![Diagrama de Clases](./docs/diagramas.png)
 
+El diagrama se genera con Graphviz desde [`docs/diagrama_clases.dot`](./docs/diagrama_clases.dot):
+
+```bash
+dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
+```
+
 ## Instalación
 
 1. Clonar el proyecto
