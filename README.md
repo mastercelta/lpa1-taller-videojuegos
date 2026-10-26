@@ -43,6 +43,10 @@ El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escr
 
 ## Requerimientos
 
+Los requerimientos se dividen en tres grupos: los del taller (obligatorios, R1 a R8), los propios del juego que salen de la historia (R9 a R13) y los opcionales (O1 a O9). Al final está el estado de avance de cada uno.
+
+#### Requerimientos del taller
+
 * **R1.1. Creación de Personaje Jugable**: El sistema debe permitir la creación de un personaje jugable con los siguientes atributos: Puntos de vida, Ataque, Defensa, Nivel, Inventario.
 
 * **R1.2. Creación de Enemigos**: El sistema debe permitir la creación de enemigos con los siguientes atributos: Puntos de vida, Ataque, Defensa, Tipo ("volador", "terrestre").
@@ -83,9 +87,9 @@ El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escr
 
 * **R7.2. Victoria por Combate Final**: El juego debe tener una condición de victoria al derrotar a un jefe final.
 
-* **R7.3. Victoria por Puntaje:**: El juego debe tener una condición de victoria al alcanzar un puntaje determinado.
+* **R7.3. Victoria por Puntaje**: El juego debe tener una condición de victoria al alcanzar un puntaje determinado.
 
-* **R8.1. Interfaz de Usuario (UI)**: sistema debe proporcionar una interfaz de usuario intuitiva y fácil de usar que muestre información relevante al jugador (puntos de vida, inventario, nivel, etc.).
+* **R8.1. Interfaz de Usuario (UI)**: El sistema debe proporcionar una interfaz de usuario intuitiva y fácil de usar que muestre información relevante al jugador (puntos de vida, inventario, nivel, etc.).
 
 * **R8.2. Retroalimentación del Jugador**: El sistema debe proporcionar retroalimentación visual y auditiva clara para las acciones del jugador (ej: daño recibido, recolección de objetos, etc.).
 
@@ -138,6 +142,52 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 * **O8. Sistema de Personalización**: El sistema debe permitir la personalización del personaje, ya sea cambio de vestimenta, o de armas.
 
 * **O9. Multijugador**: Incluir opciones multijugador, se deben definir los modos de juego, la cantidad de jugadores y la comunicación entre ellos.
+
+#### Estado de avance
+
+✅ hecho · 🟡 parcial · ⬜ pendiente
+
+| Punto | Estado | Detalle |
+|:---|:---:|:---|
+| R1.1 Personaje jugable | ✅ | `Personaje` con vida, ataque, defensa, nivel e inventario |
+| R1.2 Enemigos | ✅ | `Enemigo` con tipo terrestre o volador; cinco subclases temáticas |
+| R2.1 Trampas explosivas | ✅ | `TrampaExplosiva` con alcance y daño |
+| R2.2 Tesoros | ✅ | `Tesoro` con valor monetario |
+| R2.3 Armamento/defensa | ✅ | `Armamento` con aumentos, precios y nivel requerido |
+| R3.1 Combate | ✅ | Al chocar se ataca; los enemigos también atacan al alcanzarte |
+| R3.2 Recolectar objetos | ✅ | Tesoros suman commits; trampas y armas van al inventario |
+| R3.3 Comprar, usar, vender | 🟡 | La clase `Tienda` funciona, falta poder usarla desde el juego |
+| R3.4 Entorno | 🟡 | Se recolecta; falta poner obstáculos y usar `intentar_esquivar` |
+| R4.1 Escenario desconocido | 🟡 | Se genera el mapa; falta la niebla y las áreas separadas |
+| R4.2 Distribución aleatoria | ✅ | Enemigos y objetos al azar, sin pisar inicio, jefe ni tienda |
+| R4.3 Zona de venta | 🟡 | Existe y muestra el catálogo; falta comprar |
+| R5.1 Mecánica de combate | ✅ | `Combate.resolver_combate_enemigo` |
+| R5.2 Cálculo de daño | ✅ | Ataque menos defensa; +50 % si el arma es la debilidad |
+| R5.3 Efectos especiales | 🟡 | La explosión en área existe; falta poder activar la trampa |
+| R6.1 Experiencia y nivel | 🟡 | XP por derrotar enemigos; falta XP por objetos y ajustar el balance |
+| R6.2 Mejora de atributos | ✅ | Cada nivel da +20 vida, +5 ataque, +2 defensa |
+| R6.3 Nuevo equipamiento | 🟡 | La tienda filtra por nivel; falta comprar desde el juego |
+| R7.1 Victoria por exploración | ✅ | Al explorar el 60 % del mapa |
+| R7.2 Victoria por jefe | ✅ | Al derrotar a El Legacy Code |
+| R7.3 Victoria por puntaje | 🟡 | Funciona, pero hoy no se alcanza antes de vencer al jefe |
+| R8.1 Interfaz | ✅ | HUD con vida, nivel, commits e inventario |
+| R8.2 Retroalimentación | 🟡 | Mensajes visuales sí; falta el sonido |
+| R9.1 Pantalla principal | ✅ | Menú con Nueva partida, Cómo jugar y Salir |
+| R9.2 Estados del juego | 🟡 | Menú, jugando, pausa y fin; falta el estado minijuego |
+| R10.1 Movimiento fluido | ✅ | Caminata animada, dirección y tecla sostenida |
+| R10.2 Enemigos con comportamiento | ✅ | Patrullar, perseguir y quieto (patrón Strategy) |
+| R11.1 Mundo por zonas | ⬜ | |
+| R11.2 Puertas con requisito | ⬜ | |
+| R11.3 Herramientas | ⬜ | |
+| R12.1 Desafío de zona | ⬜ | |
+| R12.2 Minijuego de zona | ⬜ | Primero: memoria de tipos |
+| R12.3 Código en pantalla | ⬜ | |
+| R13.1 Valor de la experiencia | ⬜ | |
+| R13.2 Valor de los commits | ⬜ | Hoy todo bug da los mismos commits, con o sin su debilidad |
+| R13.3 Bestiario | ⬜ | |
+| O2 Gráficos | 🟡 | Sprites por código; pendientes los vectores de Recraft y Rive |
+| O6 Tutorial | 🟡 | Pantalla "Cómo jugar"; falta que sea interactivo |
+| O1, O3, O4, O5, O7, O8, O9 | ⬜ | |
 
 #### Glosario
 
