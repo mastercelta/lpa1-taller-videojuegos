@@ -1,0 +1,112 @@
+digraph Clases {
+    graph [rankdir=BT, splines=true, nodesep=0.5, ranksep=0.8, fontname="DejaVu Sans", dpi=130];
+    node  [shape=plaintext, fontname="DejaVu Sans", fontsize=10];
+    edge  [fontname="DejaVu Sans", fontsize=9];
+
+    Entidad [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><i><b>Entidad</b></i><br/>«abstracta»</td></tr>
+        <tr><td align="left">_nombre: str<br align="left"/>_vida: int<br align="left"/>_ataque: int<br align="left"/>_defensa: int<br align="left"/>_x, _y: int<br align="left"/>_direccion: str<br align="left"/></td></tr>
+        <tr><td align="left">mover(dx, dy)<br align="left"/>mirar(dx, dy)<br align="left"/>recibir_daño(cantidad): int<br align="left"/>curar(cantidad)<br align="left"/>esta_vivo(): bool<br align="left"/>intentar_esquivar(probabilidad): bool<br align="left"/><i>describir(): str</i><br align="left"/></td></tr></table>>];
+
+    Personaje [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>Personaje</b></td></tr>
+        <tr><td align="left">_nivel: int<br align="left"/>_experiencia: int<br align="left"/>_inventario: list[Objeto]<br align="left"/>_puntos_commit: int<br align="left"/>_armamento_equipado: list[Armamento]<br align="left"/></td></tr>
+        <tr><td align="left">recolectar(objeto)<br align="left"/>ganar_experiencia(cantidad): bool<br align="left"/>ganar_puntos_commit(cantidad)<br align="left"/>gastar_puntos_commit(cantidad): bool<br align="left"/>equipar(armamento)<br align="left"/>describir(): str<br align="left"/></td></tr></table>>];
+
+    Enemigo [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>Enemigo</b></td></tr>
+        <tr><td align="left">_tipo: str<br align="left"/>_experiencia_otorgada: int<br align="left"/>_puntos_commit_otorgados: int<br align="left"/>_comportamiento: Comportamiento<br align="left"/></td></tr>
+        <tr><td align="left">comportamiento_por_defecto(): Comportamiento<br align="left"/>vuela(): bool<br align="left"/>describir(): str<br align="left"/></td></tr></table>>];
+
+    EnemigoBug [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>EnemigoBug</b></td></tr>
+        <tr><td align="left">DEBILIDAD: str<br align="left"/></td></tr>
+        <tr><td align="left">es_debil_contra(nombre_arma): bool<br align="left"/></td></tr></table>>];
+
+    Bugs [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>EnemigoNullPointer · EnemigoBucleInfinito<br/>EnemigoVariableGlobal · EnemigoMemoryLeak</b></td></tr>
+        <tr><td align="left">DEBILIDAD heredada o sobrescrita<br align="left"/></td></tr></table>>];
+
+    EnemigoJefe [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>EnemigoJefe</b></td></tr>
+        <tr><td align="left">comportamiento_por_defecto(): Quieto<br align="left"/></td></tr></table>>];
+
+    Objeto [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><i><b>Objeto</b></i><br/>«abstracta»</td></tr>
+        <tr><td align="left">_nombre: str<br align="left"/>_descripcion: str<br align="left"/></td></tr>
+        <tr><td align="left"><i>describir(): str</i><br align="left"/></td></tr></table>>];
+
+    Tesoro [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>Tesoro</b></td></tr>
+        <tr><td align="left">_valor_monetario: int<br align="left"/></td></tr></table>>];
+
+    TrampaExplosiva [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>TrampaExplosiva</b></td></tr>
+        <tr><td align="left">_alcance_explosion: int<br align="left"/>_daño_explosion: int<br align="left"/></td></tr>
+        <tr><td align="left">explotar(objetivos): dict<br align="left"/></td></tr></table>>];
+
+    Armamento [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#dae6f8"><b>Armamento</b></td></tr>
+        <tr><td align="left">_aumento_ataque: int<br align="left"/>_aumento_defensa: int<br align="left"/>_precio_compra: int<br align="left"/>_precio_venta: int<br align="left"/>_nivel_requerido: int<br align="left"/></td></tr></table>>];
+
+    Comportamiento [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#e8f5e1"><i><b>Comportamiento</b></i><br/>«Strategy»</td></tr>
+        <tr><td align="left"><i>decidir(desde, jugador, puede_ir): tuple</i><br align="left"/></td></tr></table>>];
+    Quieto [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><b>Quieto</b></td></tr></table>>];
+    Patrullar [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><b>Patrullar</b></td></tr><tr><td align="left">_horizontal: bool<br align="left"/></td></tr></table>>];
+    Perseguir [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><b>Perseguir</b></td></tr><tr><td align="left">_radio: int<br align="left"/></td></tr></table>>];
+
+    Juego [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#fdf0d5"><b>Juego</b></td></tr>
+        <tr><td align="left">_escenario: Escenario<br align="left"/>_personaje: Personaje<br align="left"/>_tienda: Tienda<br align="left"/>_jefe: EnemigoJefe<br align="left"/>_mensaje: str<br align="left"/>_resultado: str<br align="left"/></td></tr>
+        <tr><td align="left">mover(dx, dy)<br align="left"/>actualizar(dt)<br align="left"/>mover_enemigos()<br align="left"/>terminado(): bool<br align="left"/></td></tr></table>>];
+
+    Escenario [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#fdf0d5"><b>Escenario</b></td></tr>
+        <tr><td align="left">_ancho, _alto: int<br align="left"/>_enemigos: dict<br align="left"/>_objetos: dict<br align="left"/>_zona_venta: tuple<br align="left"/>_celdas_visitadas: set<br align="left"/></td></tr>
+        <tr><td align="left">generar(zona_venta, reservadas)<br align="left"/>distribuir_enemigos(enemigos)<br align="left"/>distribuir_objetos(objetos)<br align="left"/>puede_ocupar(pos, vuela): bool<br align="left"/>porcentaje_explorado(): float<br align="left"/></td></tr></table>>];
+
+    Tienda [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#fdf0d5"><b>Tienda</b></td></tr>
+        <tr><td align="left">_catalogo: list[Armamento]<br align="left"/></td></tr>
+        <tr><td align="left">catalogo_para_nivel(nivel): list<br align="left"/>comprar(personaje, armamento): str<br align="left"/>vender(personaje, armamento): str<br align="left"/></td></tr></table>>];
+
+    Combate [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#fdf0d5"><b>Combate</b></td></tr>
+        <tr><td align="left">atacar(atacante, defensor): dict<br align="left"/>usar_trampa(trampa, objetivos): dict<br align="left"/>resolver_combate_enemigo(personaje, enemigo): list<br align="left"/></td></tr></table>>];
+
+    Aplicacion [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#f3e3f7"><b>Aplicacion</b></td></tr>
+        <tr><td align="left">_estado: Estado<br align="left"/>_ejecutando: bool<br align="left"/></td></tr>
+        <tr><td align="left">cambiar_estado(nuevo_estado)<br align="left"/>ejecutar(crear_estado_inicial)<br align="left"/>salir()<br align="left"/></td></tr></table>>];
+
+    Estado [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+        <tr><td bgcolor="#f3e3f7"><i><b>Estado</b></i><br/>«State»</td></tr>
+        <tr><td align="left"><i>manejar_evento(evento)</i><br align="left"/>actualizar(dt)<br align="left"/><i>dibujar(superficie)</i><br align="left"/></td></tr></table>>];
+    EstadoMenu [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoMenu</b></td></tr></table>>];
+    EstadoComoJugar [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoComoJugar</b></td></tr></table>>];
+    EstadoJugando [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoJugando</b></td></tr><tr><td align="left">_juego: Juego<br align="left"/></td></tr></table>>];
+    EstadoPausa [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoPausa</b></td></tr></table>>];
+
+    edge [arrowhead=empty];
+    Personaje -> Entidad; Enemigo -> Entidad;
+    EnemigoBug -> Enemigo; Bugs -> EnemigoBug; EnemigoJefe -> EnemigoBug;
+    Tesoro -> Objeto; TrampaExplosiva -> Objeto; Armamento -> Objeto;
+    Quieto -> Comportamiento; Patrullar -> Comportamiento; Perseguir -> Comportamiento;
+    EstadoMenu -> Estado; EstadoComoJugar -> Estado; EstadoJugando -> Estado; EstadoPausa -> Estado;
+
+    edge [arrowhead=none, dir=back];
+    Comportamiento -> Enemigo [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Escenario -> Juego [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Personaje -> Juego [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Tienda -> Juego [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Enemigo -> Escenario [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="0..*"];
+    Objeto -> Escenario [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="0..*"];
+    Objeto -> Personaje [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="0..*", label="inventario"];
+    Armamento -> Tienda [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1..*", label="catálogo"];
+    Estado -> Aplicacion [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1", label="estado actual"];
+    Juego -> EstadoJugando [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+
+    edge [arrowhead=vee, dir=forward, style=dashed, arrowtail=none];
+    Juego -> Combate [label="usa"];
+}
