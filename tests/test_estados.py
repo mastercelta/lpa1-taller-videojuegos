@@ -1,0 +1,95 @@
+import os
+
+os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
+
+import pygame
+import pytest
+
+from mundo.juego import Juego
+from ui.aplicacion import Aplicacion
+from ui.estados.base import Estado
+from ui.estados.como_jugar import EstadoComoJugar
+from ui.estados.jugando import EstadoJugando
+from ui.estados.menu import EstadoMenu
+from ui.estados.pausa import EstadoPausa
+from ui.vista import tamaño_ventana
+
+
+@pytest.fixture
+def app():
+    pygame.init()
+    aplicacion = Aplicacion(tamaño_ventana(Juego()), "test")
+    aplicacion._ejecutando = True
+    aplicacion.cambiar_estado(EstadoMenu(aplicacion))
+    yield aplicacion
+    pygame.quit()
+
+
+def tecla(aplicacion, key):
+    superficie = pygame.Surface(aplicacion.tamaño)
+    aplicacion.procesar([pygame.event.Event(pygame.KEYDOWN, key=key)], 0.016, superficie)
+
+
+def test_estado_es_abstracto():
+    with pytest.raises(TypeError):
+        Estado(None)
+
+
+def test_todas_las_pantallas_son_estados(app):
+    jugando = EstadoJugando(app)
+    for estado in (EstadoMenu(app), EstadoComoJugar(app), jugando, EstadoPausa(app, jugando)):
+        assert isinstance(estado, Estado)
+
+
+def test_el_menu_navega_en_circulo(app):
+    tecla(app, pygame.K_UP)
+    assert app.estado.seleccion == len(EstadoMenu.OPCIONES) - 1
+    tecla(app, pygame.K_DOWN)
+    assert app.estado.seleccion == 0
+
+
+def test_nueva_partida_entra_a_jugar(app):
+    tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoJugando)
+
+
+def test_como_jugar_y_volver(app):
+    tecla(app, pygame.K_DOWN)
+    tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoComoJugar)
+    tecla(app, pygame.K_ESCAPE)
+    assert isinstance(app.estado, EstadoMenu)
+
+
+def test_salir_desde_el_menu(app):
+    tecla(app, pygame.K_UP)
+    tecla(app, pygame.K_RETURN)
+    assert not app.ejecutando
+
+
+def test_pausa_conserva_la_partida(app):
+    tecla(app, pygame.K_RETURN)
+    jugando = app.estado
+    jugando.juego.mover(1, 0)
+    posicion = jugando.juego.personaje.posicion
+    tecla(app, pygame.K_ESCAPE)
+    assert isinstance(app.estado, EstadoPausa)
+    tecla(app, pygame.K_RETURN)
+    assert app.estado is jugando
+    assert jugando.juego.personaje.posicion == posicion
+
+
+def test_desde_la_pausa_se_vuelve_al_menu(app):
+    tecla(app, pygame.K_RETURN)
+    tecla(app, pygame.K_ESCAPE)
+    tecla(app, pygame.K_DOWN)
+    tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoMenu)
+
+
+def test_al_terminar_la_partida_enter_vuelve_al_menu(app):
+    tecla(app, pygame.K_RETURN)
+    app.estado.juego._resultado = "derrota"
+    tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoMenu)

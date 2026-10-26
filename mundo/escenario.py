@@ -9,6 +9,7 @@ class Escenario:
         self._enemigos = {}  # posicion (x, y) -> Enemigo
         self._objetos = {}  # posicion (x, y) -> Objeto
         self._zona_venta = None
+        self._reservadas = set()
         self._celdas_visitadas = set()
 
     @property
@@ -34,14 +35,15 @@ class Escenario:
     def _posicion_libre_aleatoria(self) -> tuple:
         while True:
             pos = (random.randint(0, self._ancho - 1), random.randint(0, self._alto - 1))
-            if pos not in self._enemigos and pos not in self._objetos and pos != self._zona_venta:
+            if pos not in self._enemigos and pos not in self._objetos and pos != self._zona_venta and pos not in self._reservadas:
                 return pos
 
-    def generar(self, zona_venta: tuple = None) -> None:
+    def generar(self, zona_venta: tuple = None, reservadas: tuple = ()) -> None:
         # R4.1: generación del escenario con área explorable desconocida
         self._enemigos = {}
         self._objetos = {}
         self._celdas_visitadas = set()
+        self._reservadas = set(reservadas)
         self._zona_venta = zona_venta or (self._ancho // 2, self._alto // 2)  # R4.3: zona de venta
 
     def distribuir_enemigos(self, enemigos: list) -> None:
@@ -65,6 +67,25 @@ class Escenario:
         self._enemigos.pop(pos, None)
         self._objetos.pop(pos, None)
         self._enemigos[pos] = jefe  # posición fija: el jefe no se mezcla con la distribución aleatoria
+
+    def dentro(self, pos: tuple) -> bool:
+        return 0 <= pos[0] < self._ancho and 0 <= pos[1] < self._alto
+
+    def puede_ocupar(self, pos: tuple, vuela: bool = False) -> bool:
+        # R10.2: los voladores pasan por encima de objetos y de la tienda; los terrestres no
+        if not self.dentro(pos) or pos in self._enemigos:
+            return False
+        if vuela:
+            return True
+        return pos not in self._objetos and pos != self._zona_venta
+
+    def mover_enemigo(self, desde: tuple, hasta: tuple) -> None:
+        enemigo = self._enemigos.pop(desde)
+        self._enemigos[hasta] = enemigo
+        enemigo.mirar(hasta[0] - desde[0], hasta[1] - desde[1])
+
+    def colocar_objeto(self, objeto, pos: tuple) -> None:
+        self._objetos[pos] = objeto
 
     def quitar_enemigo(self, pos: tuple) -> None:
         self._enemigos.pop(pos, None)
