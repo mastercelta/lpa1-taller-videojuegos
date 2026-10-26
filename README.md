@@ -1,12 +1,12 @@
-# Taller Videojuegos
+# Depuración: El Sueño del Programador
 
-![commits](https://badgen.net/github/commits/clubdecomputacion/lpa1-taller-videojuegos?icon=github) 
-![last_commit](https://img.shields.io/github/last-commit/clubdecomputacion/lpa1-taller-videojuegos)
+![commits](https://badgen.net/github/commits/mastercelta/lpa1-taller-videojuegos?icon=github) 
+![last_commit](https://img.shields.io/github/last-commit/mastercelta/lpa1-taller-videojuegos)
 - ver [badgen](https://badgen.net/) o [shields](https://shields.io/) para otros tipos de _badges_
 
 ## Autor
 
-- [@estudiante](https://github.com/estudiante)
+- [@mastercelta](https://github.com/mastercelta)
 
 ## Descripción del Proyecto
 
@@ -21,6 +21,25 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 3.  Implementar la lógica del juego y el sistema de combate funcional y equilibrado, así como la lógica para la interacción con objetos y enemigos en el mundo del juego.
 4.  Crear una interfaz de usuario básica que permita al jugador interactuar con el mundo del juego y visualizar la información relevante (puntos de vida, inventario, etc.).
 5.  Practicar buenas prácticas de programación como el control de versiones (Git), documentar su código.
+
+## Historia y mundo del juego
+
+Eres un estudiante de primer semestre que se quedó dormido estudiando para el parcial de programación. En el sueño, el código que escribiste a las 3 a. m. cobra vida: cada error se convirtió en un enemigo y el programa entero es un mundo roto que debes recorrer y depurar antes de que suene el despertador.
+
+El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escritorio** central (el hub) conecta con cuatro zonas. Cada zona enseña un concepto de programación, lo convierte en una mecánica de juego y entrega una **herramienta** que abre la puerta de la siguiente.
+
+| Zona | Concepto | Desafío de la zona | Minijuego | Herramienta que entrega |
+|:---|:---|:---|:---|:---|
+| 1. Valle de las Variables | variables y tipos de datos | Altares que piden un tipo: hay que llevar el ítem correcto (número, texto, booleano) | Memoria de tipos: parejas valor ↔ tipo (`42`↔`int`, `"hola"`↔`str`, `True`↔`bool`) | Declarador |
+| 2. Bosque de los Condicionales | `if` / `else`, `and` / `or` | Puertas con una condición visible (`if llave and nivel >= 2`) y caminos que se bifurcan según lo que se cumpla | Verdadero o falso: evaluar expresiones (`5 > 3 and not False`) contra reloj | Detector de condiciones |
+| 3. Laberinto de los Bucles | `while` / `for`, condición de parada | El Bucle Infinito se clona hasta que el jugador cumple la condición de parada en una palanca | Secuencia: predecir qué imprime un `for` (`range(0, 10, 3)` → `0 3 6 9`) | Break |
+| 4. Castillo de los Objetos | clases, herencia, polimorfismo | Familias de enemigos: la subclase hereda la debilidad del padre o la sobrescribe. Jefe final: **El Legacy Code** | Clasificar: ubicar cada enemigo bajo su clase padre según su debilidad | Refactorizador |
+
+**Economía con significado**
+
+- **Experiencia (XP)**: mide comprensión. Se gana al resolver los desafíos y minijuegos de cada zona (y en menor medida en combate). Cada zona entrega el XP necesario para alcanzar el nivel que exige la siguiente.
+- **Commits**: miden calidad. Vencer a un bug con su herramienta correcta (su debilidad) vale 3 commits; vencerlo a golpes vale 1. Se gastan en la tienda y para "aprobar el pull request" que abre la puerta de la siguiente zona.
+- **Bestiario**: cada bug derrotado se registra con una línea del concepto que representa.
 
 ## Requerimientos
 
@@ -70,6 +89,36 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 
 * **R8.2. Retroalimentación del Jugador**: El sistema debe proporcionar retroalimentación visual y auditiva clara para las acciones del jugador (ej: daño recibido, recolección de objetos, etc.).
 
+#### Requerimientos propios del juego
+
+Estos requerimientos amplían los anteriores con la historia y el mundo descritos arriba.
+
+* **R9.1. Pantalla principal**: El juego debe iniciar en un menú con las opciones Nueva partida, Cómo jugar y Salir, navegable con teclado.
+
+* **R9.2. Estados del juego**: El sistema debe manejar al menos los estados menú, jugando, minijuego, pausa y fin de partida (victoria o derrota), con transiciones claras entre ellos.
+
+* **R10.1. Movimiento fluido**: El personaje debe moverse de forma continua en cuatro direcciones y orientarse hacia la dirección de movimiento.
+
+* **R10.2. Enemigos con comportamiento**: Los enemigos deben patrullar o perseguir al jugador según su tipo; los voladores ignoran obstáculos y los terrestres no.
+
+* **R11.1. Mundo por zonas**: El mundo debe tener un hub (Escritorio) y cuatro zonas temáticas, cada una asociada a un concepto de programación.
+
+* **R11.2. Puertas con requisito**: Cada zona debe abrirse solo cuando el jugador tiene la herramienta de la zona anterior y el nivel requerido.
+
+* **R11.3. Herramientas**: Cada zona debe entregar una herramienta (Declarador, Detector de condiciones, Break, Refactorizador) que además funciona como armamento con debilidad asociada.
+
+* **R12.1. Desafío de zona**: Cada zona debe tener al menos un desafío jugable que aplique su concepto (altares de tipos, puertas condicionales, bucle con condición de parada, familias de enemigos).
+
+* **R12.2. Minijuego de zona**: Cada zona debe tener un minijuego educativo (memoria de tipos, verdadero/falso, secuencia de bucle, clasificación de clases) que otorgue experiencia y la herramienta de la zona.
+
+* **R12.3. Código en pantalla**: Cada desafío debe mostrar el fragmento de código que representa, para que la acción del jugador se relacione con el concepto.
+
+* **R13.1. Valor de la experiencia**: La experiencia debe ganarse principalmente al resolver desafíos y minijuegos, y cada zona debe entregar la suficiente para alcanzar el nivel que exige la siguiente.
+
+* **R13.2. Valor de los commits**: Vencer a un enemigo con su debilidad debe valer más commits que vencerlo sin ella, y los commits deben gastarse en la tienda y en abrir zonas.
+
+* **R13.3. Bestiario**: Cada enemigo derrotado por primera vez debe registrarse con el concepto que representa y poder consultarse desde el juego.
+
 #### Opcionales
 
 * **O1. Niveles de Dificultad**: El juego debe permitir la selección de diferentes niveles de dificultad, que afecten a los atributos de los enemigos, la cantidad de objetos y la complejidad del escenario.
@@ -111,7 +160,7 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 1. Clonar el proyecto
 
     ```bash
-    git clone https://github.com/clubdecomputacion/lpa1-taller-videojuegos.git
+    git clone https://github.com/mastercelta/lpa1-taller-videojuegos.git
     cd lpa1-taller-videojuegos
     ```
 
@@ -135,5 +184,20 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
     ```bash
     cd lpa1-taller-videojuegos
     python3 main.py
+    ```
+
+2. Controles
+
+    | Tecla | Acción |
+    |:---|:---|
+    | Flechas | Mover al personaje / navegar menús |
+    | Enter | Confirmar en menús |
+    | R | Reiniciar la partida al terminar |
+    | ESC | Pausa o salir |
+
+3. Ejecutar las pruebas
+
+    ```bash
+    python3 -m pytest tests/ -v
     ```
 
