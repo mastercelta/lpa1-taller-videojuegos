@@ -6,6 +6,7 @@ from mundo.escenario import Escenario
 from mundo.victoria import verificar_victoria
 
 MENSAJE_INICIAL = "Muévete con las flechas. Explora, combate y sube de nivel."
+INTERVALO_ENEMIGOS = 0.6  # segundos entre cada paso de los enemigos
 
 
 class Juego:
@@ -30,6 +31,7 @@ class Juego:
         self._mensaje = MENSAJE_INICIAL
         self._resultado = ""
         self._texto_final = ""
+        self._reloj_enemigos = 0.0
 
     @property
     def ancho(self) -> int:
@@ -77,6 +79,7 @@ class Juego:
         x, y = self._personaje.posicion
         nuevo_x = max(0, min(self._ancho - 1, x + dx))
         nuevo_y = max(0, min(self._alto - 1, y + dy))
+        self._personaje.mirar(dx, dy)
         if (nuevo_x, nuevo_y) == (x, y):
             return
 
@@ -91,6 +94,37 @@ class Juego:
         self._escenario.visitar(nuevo_x, nuevo_y)
         self._recoger((nuevo_x, nuevo_y))
         self._revisar_tienda()
+        self._revisar_fin()
+
+    def actualizar(self, dt: float) -> None:
+        # R10.2: el mundo avanza con el tiempo aunque el jugador no se mueva
+        if self.terminado:
+            return
+        self._reloj_enemigos += dt
+        while self._reloj_enemigos >= INTERVALO_ENEMIGOS and not self.terminado:
+            self._reloj_enemigos -= INTERVALO_ENEMIGOS
+            self.mover_enemigos()
+
+    def mover_enemigos(self) -> None:
+        jugador = self._personaje.posicion
+        for desde, enemigo in self._escenario.enemigos.items():
+            if self.terminado:
+                return
+            if not enemigo.esta_vivo():
+                continue
+            puede_ir = lambda pos, vuela=enemigo.vuela: self._escenario.puede_ocupar(pos, vuela)
+            dx, dy = enemigo.comportamiento.decidir(desde, jugador, puede_ir)  # polimorfismo
+            if (dx, dy) == (0, 0):
+                continue
+            hasta = (desde[0] + dx, desde[1] + dy)
+            if hasta == jugador:
+                self._recibir_ataque(enemigo)
+            elif self._escenario.puede_ocupar(hasta, enemigo.vuela):
+                self._escenario.mover_enemigo(desde, hasta)
+
+    def _recibir_ataque(self, enemigo) -> None:
+        resultado = Combate.atacar(enemigo, self._personaje)  # R3.1: el enemigo también ataca
+        self._mensaje = f"{enemigo.nombre} te embiste: -{resultado['daño']}"
         self._revisar_fin()
 
     def _combatir(self, enemigo, pos: tuple) -> None:

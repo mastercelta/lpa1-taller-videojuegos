@@ -1,23 +1,41 @@
 from ui import hud
 from ui import renderizador as r
+from ui import sprites
 
 
 def tamaño_ventana(juego) -> tuple:
     return (juego.ancho * r.TAMAÑO_CELDA, juego.alto * r.TAMAÑO_CELDA + hud.ALTURA_HUD)
 
 
-def dibujar_juego(superficie, juego) -> None:
+def dibujar_juego(superficie, juego, animador=None) -> None:
     escenario = juego.escenario
     ancho_px = juego.ancho * r.TAMAÑO_CELDA
     alto_px_mapa = juego.alto * r.TAMAÑO_CELDA
+    t = animador.tiempo if animador else 0.0
+
+    def pixel(entidad, celda):
+        if animador:
+            return animador.posicion(entidad, celda)
+        return (celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA)
 
     r.dibujar_grilla(superficie, juego.ancho, juego.alto)
     r.dibujar_zona_venta(superficie, escenario.zona_venta)
-    for pos, objeto in escenario.objetos.items():
-        r.dibujar_objeto(superficie, pos, objeto)
-    for pos, enemigo in escenario.enemigos.items():
-        r.dibujar_enemigo(superficie, pos, enemigo)
-    r.dibujar_personaje(superficie, juego.personaje.posicion)
-    hud.dibujar_hud(superficie, ancho_px, alto_px_mapa, juego.personaje, juego.mensaje)
+    for celda, objeto in escenario.objetos.items():
+        sprites.dibujar_objeto(superficie, celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA, objeto, t)
+
+    # se dibuja de arriba hacia abajo para que quien está más abajo quede adelante
+    personaje = juego.personaje
+    actores = [(enemigo, celda) for celda, enemigo in escenario.enemigos.items()]
+    actores.append((personaje, personaje.posicion))
+    actores.sort(key=lambda par: pixel(*par)[1])
+    for entidad, celda in actores:
+        px, py = pixel(entidad, celda)
+        if entidad is personaje:
+            caminando = animador.caminando(personaje) if animador else False
+            sprites.dibujar_estudiante(superficie, px, py, personaje.direccion, t, caminando)
+        else:
+            sprites.dibujar_enemigo(superficie, px, py, entidad, t)
+
+    hud.dibujar_hud(superficie, ancho_px, alto_px_mapa, personaje, juego.mensaje)
     if juego.terminado:
         hud.dibujar_final(superficie, ancho_px, alto_px_mapa + hud.ALTURA_HUD, juego.resultado, juego.texto_final)

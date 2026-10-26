@@ -1,3 +1,4 @@
+from .comportamiento import Patrullar, Perseguir
 from .entidad import Entidad
 
 TIPOS_VALIDOS = ("terrestre", "volador")
@@ -13,6 +14,26 @@ class Enemigo(Entidad):
         self._tipo = tipo  # R1.2: tipo "volador" o "terrestre"
         self._experiencia_otorgada = experiencia_otorgada
         self._puntos_commit_otorgados = puntos_commit_otorgados
+        self._comportamiento = self.comportamiento_por_defecto()  # R10.2
+
+    def comportamiento_por_defecto(self):
+        # Los terrestres patrullan; los voladores persiguen al jugador cercano.
+        # Una subclase puede sobrescribir este método para cambiar cómo se mueve.
+        if self._tipo == "volador":
+            return Perseguir(radio=4)
+        return Patrullar(horizontal=True)
+
+    @property
+    def comportamiento(self):
+        return self._comportamiento
+
+    @comportamiento.setter
+    def comportamiento(self, valor) -> None:
+        self._comportamiento = valor
+
+    @property
+    def vuela(self) -> bool:
+        return self._tipo == "volador"
 
     @property
     def tipo(self) -> str:

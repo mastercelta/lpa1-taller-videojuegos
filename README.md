@@ -153,6 +153,23 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 ## Diseño
 
+#### Conceptos de POO aplicados
+
+| Concepto | Dónde se aplica |
+|:---|:---|
+| Abstracción | `Entidad`, `Objeto`, `Estado` y `Comportamiento` son clases abstractas (`ABC`) que no se pueden instanciar |
+| Encapsulación | Atributos privados (`_vida`, `_inventario`, ...) expuestos con `@property` y setters con validación |
+| Herencia | `Entidad → Enemigo → EnemigoBug → NullPointer, BucleInfinito, VariableGlobal, MemoryLeak, Jefe` |
+| Polimorfismo | `describir()`, `es_debil_contra()`, `comportamiento_por_defecto()` y los métodos de cada `Estado` cambian según la clase |
+| Composición | `Juego` tiene un `Escenario`, un `Personaje` y una `Tienda`; cada `Enemigo` tiene un `Comportamiento` |
+
+#### Patrones de diseño
+
+- **State** (`ui/estados/`): cada pantalla (menú, cómo jugar, jugando, pausa) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
+- **Strategy** (`models/comportamiento.py`): cada enemigo tiene un `Comportamiento` intercambiable (`Patrullar`, `Perseguir`, `Quieto`). Los terrestres patrullan, los voladores persiguen y el jefe sobrescribe `comportamiento_por_defecto()` para quedarse quieto.
+
+#### Diagrama de clases
+
 ![Diagrama de Clases](./docs/diagramas.png)
 
 ## Instalación
@@ -190,10 +207,10 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
     | Tecla | Acción |
     |:---|:---|
-    | Flechas | Mover al personaje / navegar menús |
-    | Enter | Confirmar en menús |
+    | Flechas | Mover al personaje (mantener presionada para caminar seguido) / navegar menús |
+    | Enter | Confirmar en menús; volver al menú al terminar la partida |
     | R | Reiniciar la partida al terminar |
-    | ESC | Pausa o salir |
+    | ESC | Pausa durante la partida; volver o salir en los menús |
 
 3. Ejecutar las pruebas
 

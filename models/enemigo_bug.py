@@ -1,3 +1,4 @@
+from .comportamiento import Quieto
 from .enemigo import Enemigo
 
 
@@ -29,3 +30,6 @@ class EnemigoMemoryLeak(EnemigoBug):
 
 class EnemigoJefe(EnemigoBug):
     DEBILIDAD = "Refactorizador"  # el jefe también sobreescribe, solo vulnerable al arma final
+
+    def comportamiento_por_defecto(self):
+        return Quieto()  # sobrescritura: el jefe custodia su esquina y no se mueve
