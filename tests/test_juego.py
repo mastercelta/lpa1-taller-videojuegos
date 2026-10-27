@@ -139,3 +139,10 @@ def test_vender_devuelve_puntos():
     juego.vender(debugger)
     assert juego.personaje.puntos_commit == debugger.precio_venta
     assert juego.armas_en_inventario() == []
+
+
+def test_recolectar_un_objeto_da_experiencia():
+    juego = juego_limpio()
+    juego.escenario.colocar_objeto(Tesoro("Café", valor_monetario=15), (1, 0))
+    juego.mover(1, 0)
+    assert juego.personaje.experiencia == 10

@@ -8,6 +8,7 @@ from mundo.victoria import verificar_victoria
 
 MENSAJE_INICIAL = "Muévete con las flechas. Explora, combate y sube de nivel."
 INTERVALO_ENEMIGOS = 0.6  # segundos entre cada paso de los enemigos
+XP_POR_OBJETO = 10
 
 
 class Juego:
@@ -161,6 +162,8 @@ class Juego:
             self._personaje.recolectar(objeto)  # R3.2
             self._mensaje = f"Recogiste {objeto.nombre}"
         self._escenario.quitar_objeto(pos)
+        if self._personaje.ganar_experiencia(XP_POR_OBJETO):  # R6.1: también se gana XP al recolectar
+            self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
 
     @property
     def en_tienda(self) -> bool:
