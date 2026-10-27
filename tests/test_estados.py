@@ -13,6 +13,7 @@ from ui.estados.como_jugar import EstadoComoJugar
 from ui.estados.jugando import EstadoJugando
 from ui.estados.menu import EstadoMenu
 from ui.estados.pausa import EstadoPausa
+from ui.estados.tienda import EstadoTienda
 from ui.vista import tamaño_ventana
 
 
@@ -38,7 +39,7 @@ def test_estado_es_abstracto():
 
 def test_todas_las_pantallas_son_estados(app):
     jugando = EstadoJugando(app)
-    for estado in (EstadoMenu(app), EstadoComoJugar(app), jugando, EstadoPausa(app, jugando)):
+    for estado in (EstadoMenu(app), EstadoComoJugar(app), jugando, EstadoPausa(app, jugando), EstadoTienda(app, jugando)):
         assert isinstance(estado, Estado)
 
 
@@ -93,3 +94,20 @@ def test_al_terminar_la_partida_enter_vuelve_al_menu(app):
     app.estado.juego._resultado = "derrota"
     tecla(app, pygame.K_RETURN)
     assert isinstance(app.estado, EstadoMenu)
+
+
+def test_la_tienda_compra_equipa_y_vuelve_a_la_partida(app):
+    tecla(app, pygame.K_RETURN)
+    jugando = app.estado
+    juego = jugando.juego
+    juego.personaje.mover(*juego.escenario.zona_venta)
+    juego.personaje.ganar_puntos_commit(60)
+    app.cambiar_estado(EstadoTienda(app, jugando))
+    tecla(app, pygame.K_RETURN)
+    assert juego.personaje.puntos_commit == 10
+    tecla(app, pygame.K_RIGHT)
+    ataque = juego.personaje.ataque
+    tecla(app, pygame.K_RETURN)
+    assert juego.personaje.ataque > ataque
+    tecla(app, pygame.K_ESCAPE)
+    assert app.estado is jugando
