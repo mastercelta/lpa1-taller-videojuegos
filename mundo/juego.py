@@ -1,5 +1,7 @@
 from combate.combate import Combate
+from models.armamento import Armamento
 from models.personaje import Personaje
+from models.trampa_explosiva import TrampaExplosiva
 from models.tesoro import Tesoro
 from mundo.contenido import crear_enemigos, crear_objetos, crear_jefe, crear_tienda
 from mundo.escenario import Escenario
@@ -7,6 +9,9 @@ from mundo.victoria import verificar_victoria
 
 MENSAJE_INICIAL = "Muévete con las flechas. Explora, combate y sube de nivel."
 INTERVALO_ENEMIGOS = 0.6  # segundos entre cada paso de los enemigos
+XP_POR_OBJETO = 10
+CANTIDAD_OBSTACULOS = 10
+PROBABILIDAD_ESQUIVAR = 0.2
 
 
 class Juego:
@@ -19,6 +24,7 @@ class Juego:
 
         self._escenario = Escenario(ancho, alto)
         self._escenario.generar(reservadas=[inicio, posicion_jefe])
+        self._escenario.colocar_obstaculos(CANTIDAD_OBSTACULOS)
         self._escenario.distribuir_enemigos(crear_enemigos())
         self._escenario.distribuir_objetos(crear_objetos())
         self._jefe = crear_jefe()
@@ -32,6 +38,8 @@ class Juego:
         self._resultado = ""
         self._texto_final = ""
         self._reloj_enemigos = 0.0
+        self.probabilidad_esquivar = PROBABILIDAD_ESQUIVAR
+        self._eventos = []
 
     @property
     def ancho(self) -> int:
@@ -82,6 +90,9 @@ class Juego:
         self._personaje.mirar(dx, dy)
         if (nuevo_x, nuevo_y) == (x, y):
             return
+        if self._escenario.es_obstaculo((nuevo_x, nuevo_y)):
+            self._mensaje = "Un bloque de código comentado te bloquea el paso"  # R3.4
+            return
 
         enemigo = self._escenario.enemigos.get((nuevo_x, nuevo_y))
         if enemigo is not None:
@@ -123,8 +134,13 @@ class Juego:
                 self._escenario.mover_enemigo(desde, hasta)
 
     def _recibir_ataque(self, enemigo) -> None:
+        if self._personaje.intentar_esquivar(self.probabilidad_esquivar):
+            self._mensaje = f"¡Esquivaste a {enemigo.nombre}!"  # R3.4: esquivar
+            self._eventos.append("esquivar")  # R8.2
+            return
         resultado = Combate.atacar(enemigo, self._personaje)  # R3.1: el enemigo también ataca
         self._mensaje = f"{enemigo.nombre} te embiste: -{resultado['daño']}"
+        self._eventos.append("daño")  # R8.2
         self._revisar_fin()
 
     def _combatir(self, enemigo, pos: tuple) -> None:
@@ -139,15 +155,48 @@ class Juego:
                 texto += f" ¡débil a {r['debilidad_explotada']}!"
             partes.append(texto)
         self._mensaje = " | ".join(partes)
+        self._eventos.append("golpe")  # R8.2
 
-        if enemigo.esta_vivo():
-            return
+        if not enemigo.esta_vivo():
+            self._derrotar(enemigo, pos)
+
+    def _derrotar(self, enemigo, pos: tuple) -> None:
         self._escenario.quitar_enemigo(pos)
         self._personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
         subio = self._personaje.ganar_experiencia(enemigo.experiencia_otorgada)  # R6.1
         self._mensaje = f"Derrotaste a {enemigo.nombre} (+{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} pts)"
+        self._eventos.append("derrotar")  # R8.2
         if subio:
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
+
+    def trampas_en_inventario(self) -> list:
+        return [o for o in self._personaje.inventario if isinstance(o, TrampaExplosiva)]
+
+    def activar_trampa(self) -> str:
+        # R5.3: la trampa explota y daña a todos los enemigos dentro de su alcance
+        if self.terminado:
+            return ""
+        trampas = self.trampas_en_inventario()
+        if not trampas:
+            self._mensaje = "No tienes trampas en el inventario"
+            return self._mensaje
+        trampa = trampas[0]
+        x, y = self._personaje.posicion
+        alcanzados = {pos: e for pos, e in self._escenario.enemigos.items()
+                      if max(abs(pos[0] - x), abs(pos[1] - y)) <= trampa.alcance_explosion}
+        resultado = Combate.usar_trampa(trampa, list(alcanzados.values()))
+        self._personaje.quitar_del_inventario(trampa)
+        derrotados = [(pos, e) for pos, e in alcanzados.items() if not e.esta_vivo()]
+        for pos, enemigo in derrotados:
+            self._derrotar(enemigo, pos)
+        if not alcanzados:
+            self._mensaje = f"{trampa.nombre} explotó, pero no había bugs cerca"
+            self._eventos.append("explosion")  # R8.2
+        else:
+            self._mensaje = f"¡{trampa.nombre} explotó! Alcanzó a {len(alcanzados)} bug(s), derrotó a {len(derrotados)}"
+            self._eventos.append("explosion")  # R8.2
+        self._revisar_fin()
+        return self._mensaje
 
     def _recoger(self, pos: tuple) -> None:
         objeto = self._escenario.objetos.get(pos)
@@ -156,22 +205,63 @@ class Juego:
         if isinstance(objeto, Tesoro):
             self._personaje.ganar_puntos_commit(objeto.valor_monetario)  # R3.2
             self._mensaje = f"Recogiste {objeto.nombre}: +{objeto.valor_monetario} puntos de commit"
+            self._eventos.append("recoger")  # R8.2
         else:
             self._personaje.recolectar(objeto)  # R3.2
             self._mensaje = f"Recogiste {objeto.nombre}"
+            self._eventos.append("recoger")  # R8.2
         self._escenario.quitar_objeto(pos)
+        if self._personaje.ganar_experiencia(XP_POR_OBJETO):  # R6.1: también se gana XP al recolectar
+            self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
+
+    def tomar_eventos(self) -> list:
+        # R8.2: la interfaz los convierte en sonidos; el modelo no conoce Pygame
+        eventos, self._eventos = self._eventos, []
+        return eventos
+
+    @property
+    def en_tienda(self) -> bool:
+        return self._escenario.en_zona_venta(*self._personaje.posicion)
+
+    def armas_en_inventario(self) -> list:
+        return [o for o in self._personaje.inventario if isinstance(o, Armamento)]
+
+    def comprar(self, armamento) -> str:
+        # R3.3, R4.3: solo se compra parado en la zona de venta
+        if not self.en_tienda:
+            return "Debes estar en la zona de venta"
+        self._mensaje = self._tienda.comprar(self._personaje, armamento)
+        self._eventos.append("comprar" if self._mensaje.startswith("Compraste") else "error")  # R8.2
+        return self._mensaje
+
+    def vender(self, armamento) -> str:
+        if not self.en_tienda:
+            return "Debes estar en la zona de venta"
+        self._mensaje = self._tienda.vender(self._personaje, armamento)
+        self._eventos.append("comprar" if self._mensaje.startswith("Vendiste") else "error")  # R8.2
+        return self._mensaje
+
+    def equipar(self, armamento) -> str:
+        # R6.3: el equipamiento comprado mejora ataque y defensa
+        if armamento not in self.armas_en_inventario():
+            return f"No tienes {armamento.nombre} en tu inventario"
+        self._personaje.equipar(armamento)
+        self._mensaje = f"Equipaste {armamento.nombre} (+{armamento.aumento_ataque} ataque, +{armamento.aumento_defensa} defensa)"
+        self._eventos.append("comprar")  # R8.2
+        return self._mensaje
 
     def _revisar_tienda(self) -> None:
-        if self._escenario.en_zona_venta(*self._personaje.posicion):
-            nombres = ", ".join(a.nombre for a in self._tienda.catalogo_para_nivel(self._personaje.nivel))
-            self._mensaje = f"Zona de venta: {nombres}"
+        if self.en_tienda:
+            self._mensaje = "Zona de venta: presiona T para abrir la tienda"
 
     def _revisar_fin(self) -> None:
         if not self._personaje.esta_vivo():
             self._resultado = "derrota"
+            self._eventos.append("derrota")  # R8.2
             self._texto_final = "Te quedaste sin vida. El sueño se volvió pesadilla."
             return
         texto = verificar_victoria(self._personaje, self._escenario, self._jefe)  # R7.1, R7.2, R7.3
         if texto:
             self._resultado = "victoria"
+            self._eventos.append("victoria")  # R8.2
             self._texto_final = texto

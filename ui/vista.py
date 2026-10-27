@@ -20,12 +20,14 @@ def dibujar_juego(superficie, juego, animador=None) -> None:
 
     r.dibujar_grilla(superficie, juego.ancho, juego.alto)
     r.dibujar_zona_venta(superficie, escenario.zona_venta)
+    for celda in escenario.obstaculos:
+        sprites.dibujar_obstaculo(superficie, celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA)
     for celda, objeto in escenario.objetos.items():
         sprites.dibujar_objeto(superficie, celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA, objeto, t)
 
     # se dibuja de arriba hacia abajo para que quien está más abajo quede adelante
     personaje = juego.personaje
-    actores = [(enemigo, celda) for celda, enemigo in escenario.enemigos.items()]
+    actores = [(enemigo, celda) for celda, enemigo in escenario.enemigos.items() if escenario.revelada(celda)]
     actores.append((personaje, personaje.posicion))
     actores.sort(key=lambda par: pixel(*par)[1])
     for entidad, celda in actores:
@@ -35,6 +37,12 @@ def dibujar_juego(superficie, juego, animador=None) -> None:
             sprites.dibujar_estudiante(superficie, px, py, personaje.direccion, t, caminando)
         else:
             sprites.dibujar_enemigo(superficie, px, py, entidad, t)
+
+    # R4.1: lo que no se ha explorado queda tapado por la niebla
+    for x in range(juego.ancho):
+        for y in range(juego.alto):
+            if not escenario.revelada((x, y)):
+                sprites.dibujar_niebla(superficie, x * r.TAMAÑO_CELDA, y * r.TAMAÑO_CELDA, t)
 
     hud.dibujar_hud(superficie, ancho_px, alto_px_mapa, personaje, juego.mensaje)
     if juego.terminado:

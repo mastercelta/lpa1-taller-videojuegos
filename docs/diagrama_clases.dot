@@ -10,7 +10,7 @@ digraph Clases {
 
     Personaje [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
         <tr><td bgcolor="#dae6f8"><b>Personaje</b></td></tr>
-        <tr><td align="left">_nivel: int<br align="left"/>_experiencia: int<br align="left"/>_inventario: list[Objeto]<br align="left"/>_puntos_commit: int<br align="left"/>_armamento_equipado: list[Armamento]<br align="left"/></td></tr>
+        <tr><td align="left">_nivel: int<br align="left"/>_experiencia: int<br align="left"/>_inventario: list[Objeto]<br align="left"/>_puntos_commit: int<br align="left"/>_armamento_equipado: list[Armamento]<br align="left"/>_puntos_commit_ganados: int<br align="left"/></td></tr>
         <tr><td align="left">recolectar(objeto)<br align="left"/>ganar_experiencia(cantidad): bool<br align="left"/>ganar_puntos_commit(cantidad)<br align="left"/>gastar_puntos_commit(cantidad): bool<br align="left"/>equipar(armamento)<br align="left"/>describir(): str<br align="left"/></td></tr></table>>];
 
     Enemigo [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
@@ -58,13 +58,13 @@ digraph Clases {
 
     Juego [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
         <tr><td bgcolor="#fdf0d5"><b>Juego</b></td></tr>
-        <tr><td align="left">_escenario: Escenario<br align="left"/>_personaje: Personaje<br align="left"/>_tienda: Tienda<br align="left"/>_jefe: EnemigoJefe<br align="left"/>_mensaje: str<br align="left"/>_resultado: str<br align="left"/></td></tr>
-        <tr><td align="left">mover(dx, dy)<br align="left"/>actualizar(dt)<br align="left"/>mover_enemigos()<br align="left"/>terminado(): bool<br align="left"/></td></tr></table>>];
+        <tr><td align="left">_escenario: Escenario<br align="left"/>_personaje: Personaje<br align="left"/>_tienda: Tienda<br align="left"/>_jefe: EnemigoJefe<br align="left"/>_mensaje: str<br align="left"/>_resultado: str<br align="left"/>_eventos: list[str]<br align="left"/></td></tr>
+        <tr><td align="left">mover(dx, dy)<br align="left"/>actualizar(dt)<br align="left"/>mover_enemigos()<br align="left"/>comprar(armamento): str<br align="left"/>vender(armamento): str<br align="left"/>equipar(armamento): str<br align="left"/>activar_trampa(): str<br align="left"/>tomar_eventos(): list<br align="left"/>terminado(): bool<br align="left"/></td></tr></table>>];
 
     Escenario [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
         <tr><td bgcolor="#fdf0d5"><b>Escenario</b></td></tr>
-        <tr><td align="left">_ancho, _alto: int<br align="left"/>_enemigos: dict<br align="left"/>_objetos: dict<br align="left"/>_zona_venta: tuple<br align="left"/>_celdas_visitadas: set<br align="left"/></td></tr>
-        <tr><td align="left">generar(zona_venta, reservadas)<br align="left"/>distribuir_enemigos(enemigos)<br align="left"/>distribuir_objetos(objetos)<br align="left"/>puede_ocupar(pos, vuela): bool<br align="left"/>porcentaje_explorado(): float<br align="left"/></td></tr></table>>];
+        <tr><td align="left">_ancho, _alto: int<br align="left"/>_enemigos: dict<br align="left"/>_objetos: dict<br align="left"/>_zona_venta: tuple<br align="left"/>_celdas_visitadas: set<br align="left"/>_celdas_reveladas: set<br align="left"/>_obstaculos: set<br align="left"/></td></tr>
+        <tr><td align="left">generar(zona_venta, reservadas)<br align="left"/>distribuir_enemigos(enemigos)<br align="left"/>distribuir_objetos(objetos)<br align="left"/>puede_ocupar(pos, vuela): bool<br align="left"/>porcentaje_explorado(): float<br align="left"/>colocar_obstaculos(cantidad)<br align="left"/>revelada(pos): bool<br align="left"/></td></tr></table>>];
 
     Tienda [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
         <tr><td bgcolor="#fdf0d5"><b>Tienda</b></td></tr>
@@ -87,13 +87,15 @@ digraph Clases {
     EstadoComoJugar [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoComoJugar</b></td></tr></table>>];
     EstadoJugando [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoJugando</b></td></tr><tr><td align="left">_juego: Juego<br align="left"/></td></tr></table>>];
     EstadoPausa [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoPausa</b></td></tr></table>>];
+    EstadoTienda [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoTienda</b></td></tr><tr><td align="left">elementos(): list<br align="left"/></td></tr></table>>];
+    Sonidos [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>Sonidos</b></td></tr><tr><td align="left">_sonidos: dict<br align="left"/></td></tr><tr><td align="left">reproducir(nombre)<br align="left"/></td></tr></table>>];
 
     edge [arrowhead=empty];
     Personaje -> Entidad; Enemigo -> Entidad;
     EnemigoBug -> Enemigo; Bugs -> EnemigoBug; EnemigoJefe -> EnemigoBug;
     Tesoro -> Objeto; TrampaExplosiva -> Objeto; Armamento -> Objeto;
     Quieto -> Comportamiento; Patrullar -> Comportamiento; Perseguir -> Comportamiento;
-    EstadoMenu -> Estado; EstadoComoJugar -> Estado; EstadoJugando -> Estado; EstadoPausa -> Estado;
+    EstadoMenu -> Estado; EstadoComoJugar -> Estado; EstadoJugando -> Estado; EstadoPausa -> Estado; EstadoTienda -> Estado;
 
     edge [arrowhead=none, dir=back];
     Comportamiento -> Enemigo [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
@@ -106,7 +108,9 @@ digraph Clases {
     Armamento -> Tienda [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1..*", label="catálogo"];
     Estado -> Aplicacion [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1", label="estado actual"];
     Juego -> EstadoJugando [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Sonidos -> EstadoJugando [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
 
     edge [arrowhead=vee, dir=forward, style=dashed, arrowtail=none];
     Juego -> Combate [label="usa"];
+    EstadoTienda -> EstadoJugando [label="vuelve a"];
 }

@@ -58,6 +58,9 @@ def juego_con(enemigo, pos):
         juego.escenario.quitar_enemigo(p)
     for p in list(juego.escenario.objetos):
         juego.escenario.quitar_objeto(p)
+    for p in juego.escenario.obstaculos:
+        juego.escenario.quitar_obstaculo(p)
+    juego.probabilidad_esquivar = 0
     juego.escenario.colocar_jefe(enemigo, pos)
     return juego
 
