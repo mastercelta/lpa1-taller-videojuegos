@@ -100,3 +100,42 @@ def test_victoria_por_jefe_derrotado():
     juego.mover(1, 0)
     assert juego.resultado == "victoria"
     assert "Legacy Code" in juego.texto_final
+
+
+def ir_a_la_tienda(juego: Juego) -> None:
+    juego.personaje.mover(*juego.escenario.zona_venta)
+
+
+def test_solo_se_compra_en_la_zona_de_venta():
+    juego = juego_limpio()
+    juego.personaje.ganar_puntos_commit(100)
+    debugger = juego.tienda.catalogo[0]
+    assert juego.comprar(debugger) == "Debes estar en la zona de venta"
+    ir_a_la_tienda(juego)
+    assert juego.comprar(debugger) == "Compraste Debugger"
+    assert juego.armas_en_inventario() == [debugger]
+    assert juego.personaje.puntos_commit == 50
+
+
+def test_equipar_mejora_ataque_y_defensa():
+    juego = juego_limpio()
+    juego.personaje.ganar_puntos_commit(100)
+    ir_a_la_tienda(juego)
+    debugger = juego.tienda.catalogo[0]
+    juego.comprar(debugger)
+    ataque, defensa = juego.personaje.ataque, juego.personaje.defensa
+    juego.equipar(debugger)
+    assert juego.personaje.ataque == ataque + debugger.aumento_ataque
+    assert juego.personaje.defensa == defensa + debugger.aumento_defensa
+    assert juego.armas_en_inventario() == []
+
+
+def test_vender_devuelve_puntos():
+    juego = juego_limpio()
+    juego.personaje.ganar_puntos_commit(50)
+    ir_a_la_tienda(juego)
+    debugger = juego.tienda.catalogo[0]
+    juego.comprar(debugger)
+    juego.vender(debugger)
+    assert juego.personaje.puntos_commit == debugger.precio_venta
+    assert juego.armas_en_inventario() == []

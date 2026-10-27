@@ -1,4 +1,5 @@
 from combate.combate import Combate
+from models.armamento import Armamento
 from models.personaje import Personaje
 from models.tesoro import Tesoro
 from mundo.contenido import crear_enemigos, crear_objetos, crear_jefe, crear_tienda
@@ -161,10 +162,37 @@ class Juego:
             self._mensaje = f"Recogiste {objeto.nombre}"
         self._escenario.quitar_objeto(pos)
 
+    @property
+    def en_tienda(self) -> bool:
+        return self._escenario.en_zona_venta(*self._personaje.posicion)
+
+    def armas_en_inventario(self) -> list:
+        return [o for o in self._personaje.inventario if isinstance(o, Armamento)]
+
+    def comprar(self, armamento) -> str:
+        # R3.3, R4.3: solo se compra parado en la zona de venta
+        if not self.en_tienda:
+            return "Debes estar en la zona de venta"
+        self._mensaje = self._tienda.comprar(self._personaje, armamento)
+        return self._mensaje
+
+    def vender(self, armamento) -> str:
+        if not self.en_tienda:
+            return "Debes estar en la zona de venta"
+        self._mensaje = self._tienda.vender(self._personaje, armamento)
+        return self._mensaje
+
+    def equipar(self, armamento) -> str:
+        # R6.3: el equipamiento comprado mejora ataque y defensa
+        if armamento not in self.armas_en_inventario():
+            return f"No tienes {armamento.nombre} en tu inventario"
+        self._personaje.equipar(armamento)
+        self._mensaje = f"Equipaste {armamento.nombre} (+{armamento.aumento_ataque} ataque, +{armamento.aumento_defensa} defensa)"
+        return self._mensaje
+
     def _revisar_tienda(self) -> None:
-        if self._escenario.en_zona_venta(*self._personaje.posicion):
-            nombres = ", ".join(a.nombre for a in self._tienda.catalogo_para_nivel(self._personaje.nivel))
-            self._mensaje = f"Zona de venta: {nombres}"
+        if self.en_tienda:
+            self._mensaje = "Zona de venta: presiona T para abrir la tienda"
 
     def _revisar_fin(self) -> None:
         if not self._personaje.esta_vivo():
