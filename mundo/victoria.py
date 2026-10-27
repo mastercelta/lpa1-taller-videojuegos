@@ -1,5 +1,5 @@
 UMBRAL_EXPLORACION = 0.6
-UMBRAL_PUNTAJE = 150
+UMBRAL_PUNTAJE = 100  # alcanzable con los bugs y tesoros, sin vencer al jefe
 
 
 def verificar_victoria(personaje, escenario, jefe) -> str:
@@ -9,7 +9,7 @@ def verificar_victoria(personaje, escenario, jefe) -> str:
     if escenario.porcentaje_explorado() >= UMBRAL_EXPLORACION:
         return "¡Exploraste todo el escritorio! El sueño termina en paz."  # R7.1
 
-    if personaje.puntos_commit >= UMBRAL_PUNTAJE:
+    if personaje.puntos_commit_ganados >= UMBRAL_PUNTAJE:
         return f"¡Alcanzaste {UMBRAL_PUNTAJE} puntos de commit! Despiertas satisfecho."  # R7.3
 
     return ""

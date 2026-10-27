@@ -10,6 +10,7 @@ class Personaje(Entidad):
         self._experiencia_siguiente_nivel = 100
         self._inventario = []
         self._puntos_commit = 0
+        self._puntos_commit_ganados = 0
         self._armamento_equipado = []
 
     @property
@@ -28,6 +29,10 @@ class Personaje(Entidad):
     def puntos_commit(self) -> int:
         return self._puntos_commit
 
+    @property
+    def puntos_commit_ganados(self) -> int:
+        return self._puntos_commit_ganados  # R7.3: el puntaje no baja al gastar en la tienda
+
     def recolectar(self, objeto) -> None:
         self._inventario.append(objeto)  # R3.2: recolección de objetos
 
@@ -39,6 +44,7 @@ class Personaje(Entidad):
 
     def ganar_puntos_commit(self, cantidad: int) -> None:
         self._puntos_commit += cantidad
+        self._puntos_commit_ganados += cantidad
 
     def gastar_puntos_commit(self, cantidad: int) -> bool:
         if cantidad > self._puntos_commit:

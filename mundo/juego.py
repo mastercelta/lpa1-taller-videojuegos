@@ -39,6 +39,7 @@ class Juego:
         self._texto_final = ""
         self._reloj_enemigos = 0.0
         self.probabilidad_esquivar = PROBABILIDAD_ESQUIVAR
+        self._eventos = []
 
     @property
     def ancho(self) -> int:
@@ -135,9 +136,11 @@ class Juego:
     def _recibir_ataque(self, enemigo) -> None:
         if self._personaje.intentar_esquivar(self.probabilidad_esquivar):
             self._mensaje = f"¡Esquivaste a {enemigo.nombre}!"  # R3.4: esquivar
+            self._eventos.append("esquivar")  # R8.2
             return
         resultado = Combate.atacar(enemigo, self._personaje)  # R3.1: el enemigo también ataca
         self._mensaje = f"{enemigo.nombre} te embiste: -{resultado['daño']}"
+        self._eventos.append("daño")  # R8.2
         self._revisar_fin()
 
     def _combatir(self, enemigo, pos: tuple) -> None:
@@ -152,6 +155,7 @@ class Juego:
                 texto += f" ¡débil a {r['debilidad_explotada']}!"
             partes.append(texto)
         self._mensaje = " | ".join(partes)
+        self._eventos.append("golpe")  # R8.2
 
         if not enemigo.esta_vivo():
             self._derrotar(enemigo, pos)
@@ -161,6 +165,7 @@ class Juego:
         self._personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
         subio = self._personaje.ganar_experiencia(enemigo.experiencia_otorgada)  # R6.1
         self._mensaje = f"Derrotaste a {enemigo.nombre} (+{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} pts)"
+        self._eventos.append("derrotar")  # R8.2
         if subio:
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
 
@@ -186,8 +191,10 @@ class Juego:
             self._derrotar(enemigo, pos)
         if not alcanzados:
             self._mensaje = f"{trampa.nombre} explotó, pero no había bugs cerca"
+            self._eventos.append("explosion")  # R8.2
         else:
             self._mensaje = f"¡{trampa.nombre} explotó! Alcanzó a {len(alcanzados)} bug(s), derrotó a {len(derrotados)}"
+            self._eventos.append("explosion")  # R8.2
         self._revisar_fin()
         return self._mensaje
 
@@ -198,12 +205,19 @@ class Juego:
         if isinstance(objeto, Tesoro):
             self._personaje.ganar_puntos_commit(objeto.valor_monetario)  # R3.2
             self._mensaje = f"Recogiste {objeto.nombre}: +{objeto.valor_monetario} puntos de commit"
+            self._eventos.append("recoger")  # R8.2
         else:
             self._personaje.recolectar(objeto)  # R3.2
             self._mensaje = f"Recogiste {objeto.nombre}"
+            self._eventos.append("recoger")  # R8.2
         self._escenario.quitar_objeto(pos)
         if self._personaje.ganar_experiencia(XP_POR_OBJETO):  # R6.1: también se gana XP al recolectar
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
+
+    def tomar_eventos(self) -> list:
+        # R8.2: la interfaz los convierte en sonidos; el modelo no conoce Pygame
+        eventos, self._eventos = self._eventos, []
+        return eventos
 
     @property
     def en_tienda(self) -> bool:
@@ -217,12 +231,14 @@ class Juego:
         if not self.en_tienda:
             return "Debes estar en la zona de venta"
         self._mensaje = self._tienda.comprar(self._personaje, armamento)
+        self._eventos.append("comprar" if self._mensaje.startswith("Compraste") else "error")  # R8.2
         return self._mensaje
 
     def vender(self, armamento) -> str:
         if not self.en_tienda:
             return "Debes estar en la zona de venta"
         self._mensaje = self._tienda.vender(self._personaje, armamento)
+        self._eventos.append("comprar" if self._mensaje.startswith("Vendiste") else "error")  # R8.2
         return self._mensaje
 
     def equipar(self, armamento) -> str:
@@ -231,6 +247,7 @@ class Juego:
             return f"No tienes {armamento.nombre} en tu inventario"
         self._personaje.equipar(armamento)
         self._mensaje = f"Equipaste {armamento.nombre} (+{armamento.aumento_ataque} ataque, +{armamento.aumento_defensa} defensa)"
+        self._eventos.append("comprar")  # R8.2
         return self._mensaje
 
     def _revisar_tienda(self) -> None:
@@ -240,9 +257,11 @@ class Juego:
     def _revisar_fin(self) -> None:
         if not self._personaje.esta_vivo():
             self._resultado = "derrota"
+            self._eventos.append("derrota")  # R8.2
             self._texto_final = "Te quedaste sin vida. El sueño se volvió pesadilla."
             return
         texto = verificar_victoria(self._personaje, self._escenario, self._jefe)  # R7.1, R7.2, R7.3
         if texto:
             self._resultado = "victoria"
+            self._eventos.append("victoria")  # R8.2
             self._texto_final = texto

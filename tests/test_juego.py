@@ -203,3 +203,25 @@ def test_la_niebla_solo_revela_alrededor_de_lo_visitado():
     assert not juego.escenario.revelada((3, 0))
     juego.mover(1, 0)
     assert juego.escenario.revelada((3, 0))
+
+
+def test_victoria_por_puntaje_aunque_se_gaste_en_la_tienda():
+    from mundo.contenido import crear_enemigos, crear_objetos
+    from mundo.victoria import UMBRAL_PUNTAJE
+    from models.tesoro import Tesoro as T
+    alcanzable = sum(e.puntos_commit_otorgados for e in crear_enemigos()) + sum(o.valor_monetario for o in crear_objetos() if isinstance(o, T))
+    assert alcanzable >= UMBRAL_PUNTAJE
+    juego = juego_limpio()
+    juego.personaje.ganar_puntos_commit(UMBRAL_PUNTAJE - 1)
+    juego.personaje.gastar_puntos_commit(50)
+    juego.escenario.colocar_objeto(T("Café", valor_monetario=1), (1, 0))
+    juego.mover(1, 0)
+    assert juego.resultado == "victoria"
+
+
+def test_el_juego_avisa_los_eventos_para_el_sonido():
+    juego = juego_limpio()
+    juego.escenario.colocar_objeto(Tesoro("Café", valor_monetario=15), (1, 0))
+    juego.mover(1, 0)
+    assert juego.tomar_eventos() == ["recoger"]
+    assert juego.tomar_eventos() == []

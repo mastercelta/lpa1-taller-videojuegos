@@ -130,3 +130,11 @@ def test_espacio_activa_la_trampa(app):
     juego.personaje.recolectar(TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12))
     tecla(app, pygame.K_SPACE)
     assert juego.trampas_en_inventario() == []
+
+
+def test_hay_un_sonido_por_cada_evento():
+    from ui.sonido import MELODIAS, Sonidos
+    sonidos = Sonidos()
+    for nombre in ("golpe", "daño", "esquivar", "derrotar", "recoger", "comprar", "error", "explosion", "victoria", "derrota"):
+        assert nombre in MELODIAS
+        sonidos.reproducir(nombre)
