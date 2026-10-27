@@ -217,3 +217,11 @@ def test_victoria_por_puntaje_aunque_se_gaste_en_la_tienda():
     juego.escenario.colocar_objeto(T("Café", valor_monetario=1), (1, 0))
     juego.mover(1, 0)
     assert juego.resultado == "victoria"
+
+
+def test_el_juego_avisa_los_eventos_para_el_sonido():
+    juego = juego_limpio()
+    juego.escenario.colocar_objeto(Tesoro("Café", valor_monetario=15), (1, 0))
+    juego.mover(1, 0)
+    assert juego.tomar_eventos() == ["recoger"]
+    assert juego.tomar_eventos() == []

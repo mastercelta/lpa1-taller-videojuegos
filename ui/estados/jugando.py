@@ -4,6 +4,7 @@ from mundo.juego import Juego
 from ui import hud, sprites
 from ui.animador import Animador
 from ui.estados.base import Estado
+from ui.sonido import Sonidos
 from ui.vista import dibujar_juego
 
 TECLAS_MOVIMIENTO = {
@@ -25,6 +26,7 @@ class EstadoJugando(Estado):
         self._juego = juego or Juego()
         self._animador = Animador()
         self._espera = 0.0
+        self._sonidos = Sonidos()
 
     @property
     def juego(self) -> Juego:
@@ -75,6 +77,11 @@ class EstadoJugando(Estado):
                 self._espera = REPETICION
         self._juego.actualizar(dt)
         self._animador.actualizar(dt, self._juego)
+        self.reproducir_eventos()
+
+    def reproducir_eventos(self) -> None:
+        for evento in self._juego.tomar_eventos():
+            self._sonidos.reproducir(evento)  # R8.2
 
     def dibujar(self, superficie) -> None:
         dibujar_juego(superficie, self._juego, self._animador)

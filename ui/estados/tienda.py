@@ -55,6 +55,7 @@ class EstadoTienda(Estado):
         elif evento.key == pygame.K_v and self._pestaña == 1 and elementos:
             self._aviso = self.juego.vender(elementos[self._seleccion])
         self._seleccion = min(self._seleccion, max(0, len(self.elementos()) - 1))
+        self._estado_jugando.reproducir_eventos()
 
     def dibujar(self, superficie) -> None:
         self._estado_jugando.dibujar(superficie)
