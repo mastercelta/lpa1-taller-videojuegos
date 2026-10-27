@@ -202,3 +202,20 @@ def dibujar_objeto(superficie, px: float, py: float, objeto, t: float) -> None:
         superficie.blit(texto, texto.get_rect(center=(cx, cy)))
     else:
         pygame.draw.rect(superficie, (120, 220, 160), (px + 12, py + 12 + flote, C - 24, C - 24), border_radius=4)
+
+
+def dibujar_obstaculo(superficie, px: float, py: float) -> None:
+    pygame.draw.rect(superficie, (52, 58, 72), (px + 3, py + 5, C - 6, C - 8), border_radius=5)
+    pygame.draw.rect(superficie, (80, 88, 105), (px + 3, py + 5, C - 6, C - 8), 2, border_radius=5)
+    for i, ancho in enumerate((26, 18, 22)):
+        pygame.draw.line(superficie, (110, 125, 110), (px + 16, py + 14 + i * 9), (px + 16 + ancho - 10, py + 14 + i * 9), 2)
+    texto = _fuente(11).render("//", True, (120, 170, 120))
+    superficie.blit(texto, (px + 6, py + 8))
+
+
+def dibujar_niebla(superficie, px: float, py: float, t: float) -> None:
+    pygame.draw.rect(superficie, (8, 9, 13), (px, py, C, C))
+    if (int(px // C) + int(py // C)) % 3 == 0:
+        brillo = 30 + int(15 * abs(math.sin(t + px * 0.01)))
+        texto = _fuente(10, negrita=False).render("01", True, (brillo, brillo + 10, brillo))
+        superficie.blit(texto, (px + C / 2 - 6, py + C / 2 - 6))
