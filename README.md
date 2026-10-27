@@ -267,6 +267,8 @@ dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
     |:---|:---|
     | Flechas | Mover al personaje (mantener presionada para caminar seguido) / navegar menús |
     | Enter | Confirmar en menús; volver al menú al terminar la partida |
+    | Espacio | Activar una trampa del inventario (explota alrededor del personaje) |
+    | T | Abrir la tienda parado en la zona de venta (comprar, equipar, vender) |
     | R | Reiniciar la partida al terminar |
     | ESC | Pausa durante la partida; volver o salir en los menús |
 

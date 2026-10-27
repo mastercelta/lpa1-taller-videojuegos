@@ -1,5 +1,7 @@
 import pygame
 
+from models.trampa_explosiva import TrampaExplosiva
+
 ALTURA_HUD = 70
 COLOR_FONDO_HUD = (15, 16, 22)
 COLOR_BARRA_VIDA_FONDO = (60, 20, 20)
@@ -28,7 +30,8 @@ def dibujar_hud(superficie, ancho_ventana: int, y_offset: int, personaje, mensaj
     texto_vida = _fuente.render(f"Vida: {personaje.vida}/{personaje.vida_maxima}", True, COLOR_TEXTO)
     superficie.blit(texto_vida, (barra_x, barra_y + barra_alto + 2))
 
-    info = f"Nivel {personaje.nivel}   Puntos de commit: {personaje.puntos_commit}   Inventario: {len(personaje.inventario)}"
+    trampas = sum(1 for o in personaje.inventario if isinstance(o, TrampaExplosiva))
+    info = f"Nivel {personaje.nivel}   Puntos de commit: {personaje.puntos_commit}   Inventario: {len(personaje.inventario)}   Trampas: {trampas}"
     texto_info = _fuente.render(info, True, COLOR_TEXTO)
     superficie.blit(texto_info, (barra_x + barra_ancho + 20, barra_y))
 

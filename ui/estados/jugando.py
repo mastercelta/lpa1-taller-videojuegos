@@ -47,6 +47,8 @@ class EstadoJugando(Estado):
         if evento.key == pygame.K_ESCAPE:
             from ui.estados.pausa import EstadoPausa
             self.aplicacion.cambiar_estado(EstadoPausa(self.aplicacion, self))
+        elif evento.key == pygame.K_SPACE:
+            self._juego.activar_trampa()
         elif evento.key == pygame.K_t and self._juego.en_tienda:
             from ui.estados.tienda import EstadoTienda
             self.aplicacion.cambiar_estado(EstadoTienda(self.aplicacion, self))
