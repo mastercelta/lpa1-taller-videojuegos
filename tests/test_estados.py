@@ -121,3 +121,12 @@ def test_la_t_abre_la_tienda_solo_en_la_zona_de_venta(app):
     jugando.juego.personaje.mover(*jugando.juego.escenario.zona_venta)
     tecla(app, pygame.K_t)
     assert isinstance(app.estado, EstadoTienda)
+
+
+def test_espacio_activa_la_trampa(app):
+    from models.trampa_explosiva import TrampaExplosiva
+    tecla(app, pygame.K_RETURN)
+    juego = app.estado.juego
+    juego.personaje.recolectar(TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12))
+    tecla(app, pygame.K_SPACE)
+    assert juego.trampas_en_inventario() == []
