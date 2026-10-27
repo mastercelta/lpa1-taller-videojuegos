@@ -1,6 +1,7 @@
 from combate.combate import Combate
 from models.armamento import Armamento
 from models.personaje import Personaje
+from models.trampa_explosiva import TrampaExplosiva
 from models.tesoro import Tesoro
 from mundo.contenido import crear_enemigos, crear_objetos, crear_jefe, crear_tienda
 from mundo.escenario import Escenario
@@ -142,14 +143,43 @@ class Juego:
             partes.append(texto)
         self._mensaje = " | ".join(partes)
 
-        if enemigo.esta_vivo():
-            return
+        if not enemigo.esta_vivo():
+            self._derrotar(enemigo, pos)
+
+    def _derrotar(self, enemigo, pos: tuple) -> None:
         self._escenario.quitar_enemigo(pos)
         self._personaje.ganar_puntos_commit(enemigo.puntos_commit_otorgados)
         subio = self._personaje.ganar_experiencia(enemigo.experiencia_otorgada)  # R6.1
         self._mensaje = f"Derrotaste a {enemigo.nombre} (+{enemigo.experiencia_otorgada} XP, +{enemigo.puntos_commit_otorgados} pts)"
         if subio:
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
+
+    def trampas_en_inventario(self) -> list:
+        return [o for o in self._personaje.inventario if isinstance(o, TrampaExplosiva)]
+
+    def activar_trampa(self) -> str:
+        # R5.3: la trampa explota y daña a todos los enemigos dentro de su alcance
+        if self.terminado:
+            return ""
+        trampas = self.trampas_en_inventario()
+        if not trampas:
+            self._mensaje = "No tienes trampas en el inventario"
+            return self._mensaje
+        trampa = trampas[0]
+        x, y = self._personaje.posicion
+        alcanzados = {pos: e for pos, e in self._escenario.enemigos.items()
+                      if max(abs(pos[0] - x), abs(pos[1] - y)) <= trampa.alcance_explosion}
+        resultado = Combate.usar_trampa(trampa, list(alcanzados.values()))
+        self._personaje.quitar_del_inventario(trampa)
+        derrotados = [(pos, e) for pos, e in alcanzados.items() if not e.esta_vivo()]
+        for pos, enemigo in derrotados:
+            self._derrotar(enemigo, pos)
+        if not alcanzados:
+            self._mensaje = f"{trampa.nombre} explotó, pero no había bugs cerca"
+        else:
+            self._mensaje = f"¡{trampa.nombre} explotó! Alcanzó a {len(alcanzados)} bug(s), derrotó a {len(derrotados)}"
+        self._revisar_fin()
+        return self._mensaje
 
     def _recoger(self, pos: tuple) -> None:
         objeto = self._escenario.objetos.get(pos)

@@ -146,3 +146,31 @@ def test_recolectar_un_objeto_da_experiencia():
     juego.escenario.colocar_objeto(Tesoro("Café", valor_monetario=15), (1, 0))
     juego.mover(1, 0)
     assert juego.personaje.experiencia == 10
+
+
+def test_la_trampa_dania_solo_a_los_enemigos_en_su_alcance():
+    from models.trampa_explosiva import TrampaExplosiva
+    juego = juego_limpio()
+    cerca, lejos = enemigo_fijo(vida=30), enemigo_fijo(vida=30)
+    juego.escenario._enemigos[(1, 1)] = cerca
+    juego.escenario._enemigos[(5, 5)] = lejos
+    juego.personaje.recolectar(TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12))
+    juego.activar_trampa()
+    assert cerca.vida == 18
+    assert lejos.vida == 30
+    assert juego.trampas_en_inventario() == []
+
+
+def test_la_trampa_puede_derrotar_y_dar_recompensa():
+    from models.trampa_explosiva import TrampaExplosiva
+    juego = juego_limpio()
+    juego.escenario._enemigos[(1, 0)] = enemigo_fijo(vida=5)
+    juego.personaje.recolectar(TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12))
+    juego.activar_trampa()
+    assert (1, 0) not in juego.escenario.enemigos
+    assert juego.personaje.puntos_commit == 7
+
+
+def test_sin_trampas_no_pasa_nada():
+    juego = juego_limpio()
+    assert juego.activar_trampa() == "No tienes trampas en el inventario"
