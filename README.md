@@ -156,24 +156,24 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 | R2.3 Armamento/defensa | ✅ | `Armamento` con aumentos, precios y nivel requerido |
 | R3.1 Combate | ✅ | Al chocar se ataca; los enemigos también atacan al alcanzarte |
 | R3.2 Recolectar objetos | ✅ | Tesoros suman commits; trampas y armas van al inventario |
-| R3.3 Comprar, usar, vender | 🟡 | La clase `Tienda` funciona, falta poder usarla desde el juego |
-| R3.4 Entorno | 🟡 | Se recolecta; falta poner obstáculos y usar `intentar_esquivar` |
-| R4.1 Escenario desconocido | 🟡 | Se genera el mapa; falta la niebla y las áreas separadas |
+| R3.3 Comprar, usar, vender | ✅ | Con T en la zona de venta: comprar, equipar y vender (`EstadoTienda`) |
+| R3.4 Entorno | ✅ | Bloques de código comentado que no se atraviesan; 20 % de esquivar los ataques |
+| R4.1 Escenario desconocido | ✅ | Niebla sobre lo no explorado; se revela a 2 celdas de lo visitado |
 | R4.2 Distribución aleatoria | ✅ | Enemigos y objetos al azar, sin pisar inicio, jefe ni tienda |
-| R4.3 Zona de venta | 🟡 | Existe y muestra el catálogo; falta comprar |
+| R4.3 Zona de venta | ✅ | Solo ahí se puede comprar y vender |
 | R5.1 Mecánica de combate | ✅ | `Combate.resolver_combate_enemigo` |
 | R5.2 Cálculo de daño | ✅ | Ataque menos defensa; +50 % si el arma es la debilidad |
-| R5.3 Efectos especiales | 🟡 | La explosión en área existe; falta poder activar la trampa |
-| R6.1 Experiencia y nivel | 🟡 | XP por derrotar enemigos; falta XP por objetos y ajustar el balance |
+| R5.3 Efectos especiales | ✅ | Espacio activa una trampa: explota y daña a los bugs en su alcance |
+| R6.1 Experiencia y nivel | ✅ | XP por derrotar enemigos y por recolectar objetos |
 | R6.2 Mejora de atributos | ✅ | Cada nivel da +20 vida, +5 ataque, +2 defensa |
-| R6.3 Nuevo equipamiento | 🟡 | La tienda filtra por nivel; falta comprar desde el juego |
+| R6.3 Nuevo equipamiento | ✅ | Armas bloqueadas hasta el nivel requerido; equiparlas sube ataque y defensa |
 | R7.1 Victoria por exploración | ✅ | Al explorar el 60 % del mapa |
 | R7.2 Victoria por jefe | ✅ | Al derrotar a El Legacy Code |
-| R7.3 Victoria por puntaje | 🟡 | Funciona, pero hoy no se alcanza antes de vencer al jefe |
+| R7.3 Victoria por puntaje | ✅ | 100 commits ganados (no baja al gastar en la tienda) |
 | R8.1 Interfaz | ✅ | HUD con vida, nivel, commits e inventario |
-| R8.2 Retroalimentación | 🟡 | Mensajes visuales sí; falta el sonido |
+| R8.2 Retroalimentación | ✅ | Mensajes en el HUD y sonidos generados por código (`ui/sonido.py`) |
 | R9.1 Pantalla principal | ✅ | Menú con Nueva partida, Cómo jugar y Salir |
-| R9.2 Estados del juego | 🟡 | Menú, jugando, pausa y fin; falta el estado minijuego |
+| R9.2 Estados del juego | 🟡 | Menú, jugando, pausa, tienda y fin; falta el estado minijuego |
 | R10.1 Movimiento fluido | ✅ | Caminata animada, dirección y tecla sostenida |
 | R10.2 Enemigos con comportamiento | ✅ | Patrullar, perseguir y quieto (patrón Strategy) |
 | R11.1 Mundo por zonas | ⬜ | |
@@ -215,7 +215,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 #### Patrones de diseño
 
-- **State** (`ui/estados/`): cada pantalla (menú, cómo jugar, jugando, pausa) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
+- **State** (`ui/estados/`): cada pantalla (menú, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
 - **Strategy** (`models/comportamiento.py`): cada enemigo tiene un `Comportamiento` intercambiable (`Patrullar`, `Perseguir`, `Quieto`). Los terrestres patrullan, los voladores persiguen y el jefe sobrescribe `comportamiento_por_defecto()` para quedarse quieto.
 
 #### Diagrama de clases
