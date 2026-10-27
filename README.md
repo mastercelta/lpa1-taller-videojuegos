@@ -249,6 +249,8 @@ dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
     ```bash
     pip install -r requirements.txt
     ```
+
+    Se usa `pygame-ce` (la versión comunitaria de Pygame), que tiene instaladores para Python 3.14. Se importa igual: `import pygame`. Si ya tenías `pygame` instalado, primero `pip uninstall pygame`.
     
 ## Ejecución
 
