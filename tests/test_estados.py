@@ -111,3 +111,13 @@ def test_la_tienda_compra_equipa_y_vuelve_a_la_partida(app):
     assert juego.personaje.ataque > ataque
     tecla(app, pygame.K_ESCAPE)
     assert app.estado is jugando
+
+
+def test_la_t_abre_la_tienda_solo_en_la_zona_de_venta(app):
+    tecla(app, pygame.K_RETURN)
+    jugando = app.estado
+    tecla(app, pygame.K_t)
+    assert app.estado is jugando
+    jugando.juego.personaje.mover(*jugando.juego.escenario.zona_venta)
+    tecla(app, pygame.K_t)
+    assert isinstance(app.estado, EstadoTienda)

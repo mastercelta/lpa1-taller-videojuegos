@@ -16,6 +16,7 @@ SECCIONES = [
     ("Controles", [
         "Flechas: moverte   |   ESC: pausa",
         "Choca con un bug para atacarlo.",
+        "T en la zona de venta: abrir la tienda.",
         "R: reiniciar al terminar la partida.",
     ]),
     ("Las zonas", [

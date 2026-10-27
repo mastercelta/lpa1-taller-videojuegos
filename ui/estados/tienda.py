@@ -60,7 +60,7 @@ class EstadoTienda(Estado):
         self._estado_jugando.dibujar(superficie)
         ancho, alto = superficie.get_size()
         velo = pygame.Surface((ancho, alto))
-        velo.set_alpha(215)
+        velo.set_alpha(235)
         velo.fill((10, 10, 15))
         superficie.blit(velo, (0, 0))
 
@@ -91,4 +91,4 @@ class EstadoTienda(Estado):
             superficie.blit(self._fuente.render(linea, True, color), (60, 160 + i * 34))
 
         aviso = self._fuente_chica.render(self._aviso, True, COLOR_MENSAJE)
-        superficie.blit(aviso, aviso.get_rect(center=(ancho // 2, alto - 30)))
+        superficie.blit(aviso, aviso.get_rect(center=(ancho // 2, 320)))
