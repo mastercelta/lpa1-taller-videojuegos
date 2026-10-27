@@ -10,6 +10,8 @@ from mundo.victoria import verificar_victoria
 MENSAJE_INICIAL = "Muévete con las flechas. Explora, combate y sube de nivel."
 INTERVALO_ENEMIGOS = 0.6  # segundos entre cada paso de los enemigos
 XP_POR_OBJETO = 10
+CANTIDAD_OBSTACULOS = 10
+PROBABILIDAD_ESQUIVAR = 0.2
 
 
 class Juego:
@@ -22,6 +24,7 @@ class Juego:
 
         self._escenario = Escenario(ancho, alto)
         self._escenario.generar(reservadas=[inicio, posicion_jefe])
+        self._escenario.colocar_obstaculos(CANTIDAD_OBSTACULOS)
         self._escenario.distribuir_enemigos(crear_enemigos())
         self._escenario.distribuir_objetos(crear_objetos())
         self._jefe = crear_jefe()
@@ -35,6 +38,7 @@ class Juego:
         self._resultado = ""
         self._texto_final = ""
         self._reloj_enemigos = 0.0
+        self.probabilidad_esquivar = PROBABILIDAD_ESQUIVAR
 
     @property
     def ancho(self) -> int:
@@ -85,6 +89,9 @@ class Juego:
         self._personaje.mirar(dx, dy)
         if (nuevo_x, nuevo_y) == (x, y):
             return
+        if self._escenario.es_obstaculo((nuevo_x, nuevo_y)):
+            self._mensaje = "Un bloque de código comentado te bloquea el paso"  # R3.4
+            return
 
         enemigo = self._escenario.enemigos.get((nuevo_x, nuevo_y))
         if enemigo is not None:
@@ -126,6 +133,9 @@ class Juego:
                 self._escenario.mover_enemigo(desde, hasta)
 
     def _recibir_ataque(self, enemigo) -> None:
+        if self._personaje.intentar_esquivar(self.probabilidad_esquivar):
+            self._mensaje = f"¡Esquivaste a {enemigo.nombre}!"  # R3.4: esquivar
+            return
         resultado = Combate.atacar(enemigo, self._personaje)  # R3.1: el enemigo también ataca
         self._mensaje = f"{enemigo.nombre} te embiste: -{resultado['daño']}"
         self._revisar_fin()
