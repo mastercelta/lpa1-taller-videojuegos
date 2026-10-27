@@ -10,6 +10,9 @@ def juego_limpio() -> Juego:
             juego.escenario.quitar_enemigo(pos)
     for pos in list(juego.escenario.objetos):
         juego.escenario.quitar_objeto(pos)
+    for pos in juego.escenario.obstaculos:
+        juego.escenario.quitar_obstaculo(pos)
+    juego.probabilidad_esquivar = 0
     return juego
 
 
@@ -174,3 +177,29 @@ def test_la_trampa_puede_derrotar_y_dar_recompensa():
 def test_sin_trampas_no_pasa_nada():
     juego = juego_limpio()
     assert juego.activar_trampa() == "No tienes trampas en el inventario"
+
+
+def test_los_obstaculos_bloquean_el_paso_sin_aislar_celdas():
+    juego = Juego()
+    assert len(juego.escenario.obstaculos) == 10
+    assert juego.escenario._todo_conectado()
+    limpio = juego_limpio()
+    limpio.escenario._obstaculos.add((1, 0))
+    limpio.mover(1, 0)
+    assert limpio.personaje.posicion == (0, 0)
+
+
+def test_con_esquivar_seguro_el_enemigo_no_hace_daño():
+    juego = juego_limpio()
+    juego.probabilidad_esquivar = 1
+    juego._recibir_ataque(enemigo_fijo(vida=10, ataque=50))
+    assert juego.personaje.vida == juego.personaje.vida_maxima
+    assert "Esquivaste" in juego.mensaje
+
+
+def test_la_niebla_solo_revela_alrededor_de_lo_visitado():
+    juego = juego_limpio()
+    assert juego.escenario.revelada((2, 2))
+    assert not juego.escenario.revelada((3, 0))
+    juego.mover(1, 0)
+    assert juego.escenario.revelada((3, 0))
