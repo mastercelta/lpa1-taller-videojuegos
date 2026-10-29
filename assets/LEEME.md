@@ -15,3 +15,5 @@ Si un PNG con estos nombres existe, el juego lo usa en vez del dibujo por códig
 | `sprites/EnemigoJefe.png` | El jefe final |
 
 Los sprites van con fondo transparente.
+
+La música va en `musica/` (ver `musica/LEEME.md`).

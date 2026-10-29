@@ -180,3 +180,14 @@ def test_cerrar_la_ventana_guarda_la_partida(app):
     superficie = pygame.Surface(app.tamaño)
     app.procesar([pygame.event.Event(pygame.QUIT)], 0.016, superficie)
     assert app.guardado.cargar().personaje.puntos_commit == 12
+
+
+def test_cada_pantalla_pide_su_musica(app):
+    assert app.musica.actual is None or app.musica.actual == "titulo"
+    tecla(app, pygame.K_RETURN)
+    assert app.musica.actual == "historia"
+    tecla(app, pygame.K_ESCAPE)
+    assert app.musica.actual == "mundo"
+    app.estado.juego._resultado = "derrota"
+    tecla(app, pygame.K_LEFT)
+    assert app.estado.pista == "derrota"

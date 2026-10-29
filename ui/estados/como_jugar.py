@@ -30,6 +30,8 @@ SECCIONES = [
 
 class EstadoComoJugar(Estado):
 
+    pista = "titulo"
+
     def __init__(self, aplicacion):
         super().__init__(aplicacion)
         self._fuente_titulo = pygame.font.SysFont("arial", 30, bold=True)
