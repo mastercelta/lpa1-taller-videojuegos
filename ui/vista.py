@@ -1,6 +1,13 @@
+import math
+
+import pygame
+
 from ui import hud
 from ui import renderizador as r
 from ui import sprites
+from ui.texturas import Texturas
+
+_texturas = Texturas()
 
 
 def tamaño_ventana(juego) -> tuple:
@@ -18,10 +25,18 @@ def dibujar_juego(superficie, juego, animador=None) -> None:
             return animador.posicion(entidad, celda)
         return (celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA)
 
-    r.dibujar_grilla(superficie, juego.ancho, juego.alto)
-    r.dibujar_zona_venta(superficie, escenario.zona_venta)
+    C = r.TAMAÑO_CELDA
+    for x in range(juego.ancho):
+        for y in range(juego.alto):
+            superficie.blit(_texturas.piso(x, y), (x * C, y * C))
+    zx, zy = escenario.zona_venta
+    superficie.blit(_texturas.zona_venta(), (zx * C, zy * C))
+    obstaculo = _texturas.obstaculo()
     for celda in escenario.obstaculos:
-        sprites.dibujar_obstaculo(superficie, celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA)
+        if obstaculo is not None:
+            superficie.blit(obstaculo, (celda[0] * C, celda[1] * C))
+        else:
+            sprites.dibujar_obstaculo(superficie, celda[0] * C, celda[1] * C)
     for celda, objeto in escenario.objetos.items():
         sprites.dibujar_objeto(superficie, celda[0] * r.TAMAÑO_CELDA, celda[1] * r.TAMAÑO_CELDA, objeto, t)
 
@@ -32,11 +47,24 @@ def dibujar_juego(superficie, juego, animador=None) -> None:
     actores.sort(key=lambda par: pixel(*par)[1])
     for entidad, celda in actores:
         px, py = pixel(entidad, celda)
-        if entidad is personaje:
+        nombre = f"estudiante_{personaje.direccion}" if entidad is personaje else type(entidad).__name__
+        imagen = _texturas.sprite(nombre)
+        if imagen is not None:
+            flote = 2 * math.sin(t * 6) if getattr(entidad, "vuela", False) else 0
+            superficie.blit(imagen, (px, py + flote))  # asset de Recraft
+        elif entidad is personaje:
             caminando = animador.caminando(personaje) if animador else False
             sprites.dibujar_estudiante(superficie, px, py, personaje.direccion, t, caminando)
         else:
             sprites.dibujar_enemigo(superficie, px, py, entidad, t)
+
+    # luz alrededor del estudiante: el resto del sueño queda en penumbra
+    lx, ly = pixel(personaje, personaje.posicion)
+    luz = _texturas.luz()
+    fondo = pygame.Surface((ancho_px, alto_px_mapa), pygame.SRCALPHA)
+    fondo.fill((5, 6, 12, 150))
+    fondo.blit(luz, luz.get_rect(center=(lx + C / 2, ly + C / 2)), special_flags=pygame.BLEND_RGBA_MIN)
+    superficie.blit(fondo, (0, 0))
 
     # R4.1: lo que no se ha explorado queda tapado por la niebla
     for x in range(juego.ancho):
