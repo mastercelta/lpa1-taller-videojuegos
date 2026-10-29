@@ -221,7 +221,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 #### Patrones de diseño
 
-- **State** (`ui/estados/`): cada pantalla (menú, intro, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
+- **State** (`ui/estados/`): cada pantalla (título, menú, intro, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
 - **Strategy** (`models/comportamiento.py`): cada enemigo tiene un `Comportamiento` intercambiable (`Patrullar`, `Perseguir`, `Quieto`). Los terrestres patrullan, los voladores persiguen y el jefe sobrescribe `comportamiento_por_defecto()` para quedarse quieto.
 
 #### Diagrama de clases
@@ -239,6 +239,11 @@ dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
 [**mastercelta.github.io/lpa1-taller-videojuegos**](https://mastercelta.github.io/lpa1-taller-videojuegos/)
 
 Cada push a `main` compila el juego para la web con [pygbag](https://pypi.org/project/pygbag/) (Python + Pygame en WebAssembly) y lo publica en GitHub Pages (`.github/workflows/web.yml`). La partida se guarda en el navegador.
+
+## Créditos
+
+- Música: [15 Melodic RPG Chiptunes](https://opengameart.org/content/15-melodic-rpg-chiptunes) de Aureolus_Omicron (CC0). Ver `assets/musica/LEEME.md`.
+- Gráficos y efectos de sonido: generados por código; los assets de Recraft se cargan desde `assets/`.
 
 ## Instalación
 
