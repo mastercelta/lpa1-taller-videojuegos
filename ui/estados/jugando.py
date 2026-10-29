@@ -20,6 +20,7 @@ REPETICION = 0.13  # segundos entre pasos con la tecla sostenida
 
 class EstadoJugando(Estado):
 
+
     def __init__(self, aplicacion, juego: Juego = None):
         super().__init__(aplicacion)
         hud.inicializar_fuentes()
@@ -34,6 +35,12 @@ class EstadoJugando(Estado):
     @property
     def juego(self) -> Juego:
         return self._juego
+
+    @property
+    def pista(self) -> str:
+        if self._juego.resultado == "derrota":
+            return "derrota"
+        return "jefe" if self._juego.jefe_avistado else "mundo"
 
     def _reiniciar(self) -> None:
         self._juego = Juego()
@@ -91,6 +98,7 @@ class EstadoJugando(Estado):
         self._juego.actualizar(dt)
         self._animador.actualizar(dt, self._juego)
         self.reproducir_eventos()
+        self.aplicacion.musica.reproducir(self.pista)
         self._reloj_guardado += dt
         if self._reloj_guardado >= INTERVALO_AUTOSAVE:
             self.guardar()

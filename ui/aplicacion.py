@@ -3,6 +3,7 @@ import asyncio
 import pygame
 
 from mundo.guardado import Guardado
+from ui.musica import Musica
 
 
 class Aplicacion:
@@ -11,6 +12,7 @@ class Aplicacion:
     def __init__(self, tamaño: tuple, titulo: str, guardado: Guardado = None):
         self._tamaño = tamaño
         self._guardado = guardado or Guardado()
+        self._musica = Musica()
         self._titulo = titulo
         self._estado = None
         self._ejecutando = False
@@ -24,6 +26,10 @@ class Aplicacion:
         return self._guardado
 
     @property
+    def musica(self) -> Musica:
+        return self._musica
+
+    @property
     def estado(self):
         return self._estado
 
@@ -33,6 +39,8 @@ class Aplicacion:
 
     def cambiar_estado(self, nuevo_estado) -> None:
         self._estado = nuevo_estado
+        if nuevo_estado.pista:
+            self._musica.reproducir(nuevo_estado.pista)
 
     def salir(self) -> None:
         self._ejecutando = False
@@ -53,7 +61,7 @@ class Aplicacion:
         ventana = pygame.display.set_mode(self._tamaño)
         pygame.display.set_caption(self._titulo)
         reloj = pygame.time.Clock()
-        self._estado = crear_estado_inicial(self)
+        self.cambiar_estado(crear_estado_inicial(self))
         self._ejecutando = True
         while self._ejecutando:
             dt = reloj.tick(60) / 1000
