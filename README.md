@@ -179,7 +179,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 | R8.1 Interfaz | ✅ | HUD con vida, nivel, commits e inventario |
 | R8.2 Retroalimentación | ✅ | Mensajes en el HUD y sonidos generados por código (`ui/sonido.py`) |
 | R9.1 Pantalla principal | ✅ | Menú con Nueva partida, Cómo jugar y Salir |
-| R9.2 Estados del juego | 🟡 | Menú, jugando, pausa, tienda y fin; falta el estado minijuego |
+| R9.2 Estados del juego | 🟡 | Menú, intro, jugando, pausa, tienda y fin; falta el estado minijuego |
 | R10.1 Movimiento fluido | ✅ | Caminata animada, dirección y tecla sostenida |
 | R10.2 Enemigos con comportamiento | ✅ | Patrullar, perseguir y quieto (patrón Strategy) |
 | R11.1 Mundo por zonas | ⬜ | |
@@ -221,7 +221,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 #### Patrones de diseño
 
-- **State** (`ui/estados/`): cada pantalla (menú, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
+- **State** (`ui/estados/`): cada pantalla (menú, intro, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
 - **Strategy** (`models/comportamiento.py`): cada enemigo tiene un `Comportamiento` intercambiable (`Patrullar`, `Perseguir`, `Quieto`). Los terrestres patrullan, los voladores persiguen y el jefe sobrescribe `comportamiento_por_defecto()` para quedarse quieto.
 
 #### Diagrama de clases
