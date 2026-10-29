@@ -12,6 +12,8 @@ COLOR_MENSAJE = (240, 210, 60)
 class EstadoTienda(Estado):
     # R3.3, R4.3: se abre encima de la partida, que queda en pausa mientras se compra
 
+    pista = "tienda"
+
     PESTAÑAS = ("Comprar", "Mi inventario")
 
     def __init__(self, aplicacion, estado_jugando):

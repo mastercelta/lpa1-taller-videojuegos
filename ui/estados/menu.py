@@ -24,6 +24,8 @@ LINEAS_DE_FONDO = [
 class EstadoMenu(Estado):
     # R9.1: pantalla principal navegable con teclado
 
+    pista = "titulo"
+
     OPCIONES = ("Nueva partida", "Cómo jugar", "Salir")
 
     def __init__(self, aplicacion):

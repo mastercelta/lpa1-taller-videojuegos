@@ -237,6 +237,10 @@ class Juego:
         if self._personaje.ganar_experiencia(XP_POR_OBJETO):  # R6.1: también se gana XP al recolectar
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
 
+    @property
+    def jefe_avistado(self) -> bool:
+        return self._jefe is not None and self._escenario.revelada(self._jefe_posicion())
+
     def _jefe_posicion(self) -> tuple:
         for pos, enemigo in self._escenario.enemigos.items():
             if enemigo is self._jefe:

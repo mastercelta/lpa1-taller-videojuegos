@@ -17,6 +17,8 @@ COLORES_HABLANTE = {NARRADOR: (150, 160, 190), PATO: (250, 215, 60), JEFE: (230,
 class EstadoIntro(Estado):
     # Escena de diálogos antes de la partida: Enter avanza, ESC la salta
 
+    pista = "historia"
+
     def __init__(self, aplicacion, dialogos: list = None):
         super().__init__(aplicacion)
         self._dialogos = dialogos or INTRO
