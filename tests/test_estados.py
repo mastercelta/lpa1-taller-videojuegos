@@ -191,3 +191,16 @@ def test_cada_pantalla_pide_su_musica(app):
     app.estado.juego._resultado = "derrota"
     tecla(app, pygame.K_LEFT)
     assert app.estado.pista == "derrota"
+
+
+def test_la_pantalla_de_titulo_lleva_al_menu(app):
+    from ui.estados.titulo import EstadoTitulo
+    titulo = EstadoTitulo(app)
+    app.cambiar_estado(titulo)
+    assert isinstance(titulo, Estado)
+    assert app.musica.actual == "titulo"
+    tecla(app, pygame.K_RETURN)
+    assert app.estado is titulo  # espera un instante para no saltarla por accidente
+    titulo.actualizar(0.5)
+    tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoMenu)
