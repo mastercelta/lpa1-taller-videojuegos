@@ -55,6 +55,9 @@ class Texturas:
     def obstaculo(self):
         return self._obtener("obstaculo", lambda: cargar_png(ARCHIVOS["obstaculo"], (C, C)))
 
+    def luz(self):
+        return self._obtener("luz", crear_luz)
+
     def sprite(self, nombre: str):
         # sprites/<Clase>.png, por ejemplo sprites/EnemigoNullPointer.png o sprites/estudiante_abajo.png
         return self._obtener(f"sprite_{nombre}", lambda: cargar_png(os.path.join("sprites", f"{nombre}.png"), (C, C)))
@@ -96,3 +99,13 @@ def _alfombra_tienda():
         pygame.draw.line(tile, (210, 120, 40), (12, 16 + i * 8), (C - 12, 16 + i * 8), 3)
     pygame.draw.rect(tile, (28, 56, 40), (0, 0, C, C), 1)
     return tile
+
+
+def crear_luz(radio: int = 240, oscuridad: int = 150):
+    # sombra alrededor del jugador: transparente en el centro y oscura hacia los bordes
+    pequeña = pygame.Surface((64, 64), pygame.SRCALPHA)
+    for x in range(64):
+        for y in range(64):
+            d = min(1.0, ((x - 31.5) ** 2 + (y - 31.5) ** 2) ** 0.5 / 32)
+            pequeña.set_at((x, y), (5, 6, 12, int(oscuridad * d ** 1.6)))
+    return pygame.transform.smoothscale(pequeña, (radio * 2, radio * 2))

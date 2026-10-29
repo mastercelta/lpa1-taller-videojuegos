@@ -1,5 +1,7 @@
 import math
 
+import pygame
+
 from ui import hud
 from ui import renderizador as r
 from ui import sprites
@@ -55,6 +57,14 @@ def dibujar_juego(superficie, juego, animador=None) -> None:
             sprites.dibujar_estudiante(superficie, px, py, personaje.direccion, t, caminando)
         else:
             sprites.dibujar_enemigo(superficie, px, py, entidad, t)
+
+    # luz alrededor del estudiante: el resto del sueño queda en penumbra
+    lx, ly = pixel(personaje, personaje.posicion)
+    luz = _texturas.luz()
+    fondo = pygame.Surface((ancho_px, alto_px_mapa), pygame.SRCALPHA)
+    fondo.fill((5, 6, 12, 150))
+    fondo.blit(luz, luz.get_rect(center=(lx + C / 2, ly + C / 2)), special_flags=pygame.BLEND_RGBA_MIN)
+    superficie.blit(fondo, (0, 0))
 
     # R4.1: lo que no se ha explorado queda tapado por la niebla
     for x in range(juego.ancho):
