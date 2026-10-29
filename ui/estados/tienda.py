@@ -57,6 +57,9 @@ class EstadoTienda(Estado):
         self._seleccion = min(self._seleccion, max(0, len(self.elementos()) - 1))
         self._estado_jugando.reproducir_eventos()
 
+    def al_cerrar(self) -> None:
+        self._estado_jugando.al_cerrar()
+
     def dibujar(self, superficie) -> None:
         self._estado_jugando.dibujar(superficie)
         ancho, alto = superficie.get_size()

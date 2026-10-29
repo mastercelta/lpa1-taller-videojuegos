@@ -32,5 +32,10 @@ class Armamento(Objeto):
     def nivel_requerido(self) -> int:
         return self._nivel_requerido
 
+    def a_dict(self) -> dict:
+        return {**super().a_dict(), "aumento_ataque": self._aumento_ataque, "aumento_defensa": self._aumento_defensa,
+                "precio_compra": self._precio_compra, "precio_venta": self._precio_venta,
+                "nivel_requerido": self._nivel_requerido}
+
     def describir(self) -> str:
         return f"{self.nombre} - Atq +{self.aumento_ataque} / Def +{self.aumento_defensa} | Compra: {self.precio_compra} | Venta: {self.precio_venta} | Nivel req: {self.nivel_requerido}"

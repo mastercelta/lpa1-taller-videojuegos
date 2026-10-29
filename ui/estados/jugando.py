@@ -13,6 +13,7 @@ TECLAS_MOVIMIENTO = {
     pygame.K_LEFT: (-1, 0),
     pygame.K_RIGHT: (1, 0),
 }
+INTERVALO_AUTOSAVE = 5.0  # segundos entre guardados automáticos
 RETARDO_INICIAL = 0.22  # pausa tras el primer paso antes de caminar seguido
 REPETICION = 0.13  # segundos entre pasos con la tecla sostenida
 
@@ -27,6 +28,8 @@ class EstadoJugando(Estado):
         self._animador = Animador()
         self._espera = 0.0
         self._sonidos = Sonidos()
+        self._reloj_guardado = 0.0
+        self.aplicacion.guardado.guardar(self._juego)
 
     @property
     def juego(self) -> Juego:
@@ -35,6 +38,15 @@ class EstadoJugando(Estado):
     def _reiniciar(self) -> None:
         self._juego = Juego()
         self._animador = Animador()
+        self.guardar()
+
+    def guardar(self) -> None:
+        # Autosave: se guarda solo, el jugador nunca tiene que acordarse
+        self.aplicacion.guardado.guardar(self._juego)
+        self._reloj_guardado = 0.0
+
+    def al_cerrar(self) -> None:
+        self.guardar()
 
     def manejar_evento(self, evento) -> None:
         if evento.type != pygame.KEYDOWN:
@@ -48,6 +60,7 @@ class EstadoJugando(Estado):
             return
         if evento.key == pygame.K_ESCAPE:
             from ui.estados.pausa import EstadoPausa
+            self.guardar()
             self.aplicacion.cambiar_estado(EstadoPausa(self.aplicacion, self))
         elif evento.key == pygame.K_SPACE:
             self._juego.activar_trampa()
@@ -78,10 +91,16 @@ class EstadoJugando(Estado):
         self._juego.actualizar(dt)
         self._animador.actualizar(dt, self._juego)
         self.reproducir_eventos()
+        self._reloj_guardado += dt
+        if self._reloj_guardado >= INTERVALO_AUTOSAVE:
+            self.guardar()
 
     def reproducir_eventos(self) -> None:
-        for evento in self._juego.tomar_eventos():
+        eventos = self._juego.tomar_eventos()
+        for evento in eventos:
             self._sonidos.reproducir(evento)  # R8.2
+        if eventos:
+            self.guardar()
 
     def dibujar(self, superficie) -> None:
         dibujar_juego(superficie, self._juego, self._animador)

@@ -33,6 +33,9 @@ class EstadoPausa(Estado):
                 from ui.estados.menu import EstadoMenu
                 self.aplicacion.cambiar_estado(EstadoMenu(self.aplicacion))
 
+    def al_cerrar(self) -> None:
+        self._estado_jugando.al_cerrar()
+
     def dibujar(self, superficie) -> None:
         self._estado_jugando.dibujar(superficie)
         ancho, alto = superficie.get_size()

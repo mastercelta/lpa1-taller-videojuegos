@@ -83,6 +83,21 @@ class Entidad(ABC):
     def intentar_esquivar(self, probabilidad: float = 0.2) -> bool:
         return random.random() < probabilidad  # R3.4: esquivar obstáculos del escenario
 
+    def a_dict(self) -> dict:
+        # Autosave: la base guarda lo común; Personaje y Enemigo agregan lo suyo
+        return {"clase": type(self).__name__, "nombre": self._nombre, "vida": self._vida,
+                "vida_maxima": self._vida_maxima, "ataque": self._ataque, "defensa": self._defensa,
+                "x": self._x, "y": self._y, "direccion": self._direccion}
+
+    def restaurar(self, datos: dict) -> None:
+        self._nombre = datos["nombre"]
+        self._vida = datos["vida"]
+        self._vida_maxima = datos["vida_maxima"]
+        self._ataque = datos["ataque"]
+        self._defensa = datos["defensa"]
+        self._x, self._y = datos["x"], datos["y"]
+        self._direccion = datos["direccion"]
+
     @abstractmethod
     def describir(self) -> str:
         pass
