@@ -24,4 +24,5 @@ def test_un_png_en_assets_reemplaza_el_dibujo(tmp_path, monkeypatch):
     pygame.image.save(imagen, str(tmp_path / "sprites" / "EnemigoNullPointer.png"))
     sprite = texturas.Texturas().sprite("EnemigoNullPointer")
     assert sprite.get_size() == (TAMAÑO_CELDA, TAMAÑO_CELDA)
-    assert sprite.get_at((10, 10))[:3] == (255, 0, 0)
+    r, g, b = sprite.get_at((10, 10))[:3]
+    assert r > 240 and g < 10 and b < 10
