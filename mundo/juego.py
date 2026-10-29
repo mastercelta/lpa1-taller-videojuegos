@@ -5,9 +5,10 @@ from models.trampa_explosiva import TrampaExplosiva
 from models.tesoro import Tesoro
 from mundo.contenido import crear_enemigos, crear_objetos, crear_jefe, crear_tienda
 from mundo.escenario import Escenario
+from mundo.historia import AVISTAR_JEFE, FINAL_DERROTA
 from mundo.victoria import verificar_victoria
 
-MENSAJE_INICIAL = "Muévete con las flechas. Explora, combate y sube de nivel."
+MENSAJE_INICIAL = "Pato de Goma: «Explora con las flechas. La guarida del Legacy Code está al fondo.»"
 INTERVALO_ENEMIGOS = 0.6  # segundos entre cada paso de los enemigos
 XP_POR_OBJETO = 10
 CANTIDAD_OBSTACULOS = 10
@@ -40,6 +41,25 @@ class Juego:
         self._reloj_enemigos = 0.0
         self.probabilidad_esquivar = PROBABILIDAD_ESQUIVAR
         self._eventos = []
+
+    def a_dict(self) -> dict:
+        return {
+            "version": 1,
+            "escenario": self._escenario.a_dict(),
+            "personaje": self._personaje.a_dict(),
+            "mensaje": self._mensaje,
+        }
+
+    @classmethod
+    def desde_dict(cls, datos: dict) -> "Juego":
+        # Autosave: se arma una partida nueva y se le reemplaza el estado por el guardado
+        escenario = datos["escenario"]
+        juego = cls(escenario["ancho"], escenario["alto"])
+        juego._escenario.restaurar(escenario)
+        juego._personaje.restaurar(datos["personaje"])
+        juego._jefe = next((e for e in juego._escenario.enemigos.values() if type(e).__name__ == "EnemigoJefe"), None)
+        juego._mensaje = "Partida recuperada. " + datos.get("mensaje", "")
+        return juego
 
     @property
     def ancho(self) -> int:
@@ -102,9 +122,12 @@ class Juego:
                 return
 
         self._personaje.mover(nuevo_x - x, nuevo_y - y)
+        jefe_oculto = self._jefe is not None and not self._escenario.revelada(self._jefe_posicion())
         self._escenario.visitar(nuevo_x, nuevo_y)
         self._recoger((nuevo_x, nuevo_y))
         self._revisar_tienda()
+        if jefe_oculto and self._escenario.revelada(self._jefe_posicion()):
+            self._mensaje = AVISTAR_JEFE  # la primera vez que el jefe sale de la niebla
         self._revisar_fin()
 
     def actualizar(self, dt: float) -> None:
@@ -214,6 +237,12 @@ class Juego:
         if self._personaje.ganar_experiencia(XP_POR_OBJETO):  # R6.1: también se gana XP al recolectar
             self._mensaje += f" ¡Nivel {self._personaje.nivel}!"
 
+    def _jefe_posicion(self) -> tuple:
+        for pos, enemigo in self._escenario.enemigos.items():
+            if enemigo is self._jefe:
+                return pos
+        return (-1, -1)
+
     def tomar_eventos(self) -> list:
         # R8.2: la interfaz los convierte en sonidos; el modelo no conoce Pygame
         eventos, self._eventos = self._eventos, []
@@ -258,7 +287,7 @@ class Juego:
         if not self._personaje.esta_vivo():
             self._resultado = "derrota"
             self._eventos.append("derrota")  # R8.2
-            self._texto_final = "Te quedaste sin vida. El sueño se volvió pesadilla."
+            self._texto_final = FINAL_DERROTA
             return
         texto = verificar_victoria(self._personaje, self._escenario, self._jefe)  # R7.1, R7.2, R7.3
         if texto:

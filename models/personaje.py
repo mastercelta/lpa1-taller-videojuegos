@@ -79,5 +79,23 @@ class Personaje(Entidad):
         if armamento in self._inventario:
             self._inventario.remove(armamento)
 
+    def a_dict(self) -> dict:
+        return {**super().a_dict(), "nivel": self._nivel, "experiencia": self._experiencia,
+                "experiencia_siguiente_nivel": self._experiencia_siguiente_nivel,
+                "puntos_commit": self._puntos_commit, "puntos_commit_ganados": self._puntos_commit_ganados,
+                "inventario": [o.a_dict() for o in self._inventario],
+                "armamento_equipado": [a.a_dict() for a in self._armamento_equipado]}
+
+    def restaurar(self, datos: dict) -> None:
+        from .fabrica import objeto_desde_dict
+        super().restaurar(datos)
+        self._nivel = datos["nivel"]
+        self._experiencia = datos["experiencia"]
+        self._experiencia_siguiente_nivel = datos["experiencia_siguiente_nivel"]
+        self._puntos_commit = datos["puntos_commit"]
+        self._puntos_commit_ganados = datos["puntos_commit_ganados"]
+        self._inventario = [objeto_desde_dict(o) for o in datos["inventario"]]
+        self._armamento_equipado = [objeto_desde_dict(a) for a in datos["armamento_equipado"]]
+
     def describir(self) -> str:
         return f"{self.nombre} - Nivel {self.nivel} | Vida: {self.vida}/{self.vida_maxima} | Ataque: {self.ataque} | Defensa: {self.defensa}"

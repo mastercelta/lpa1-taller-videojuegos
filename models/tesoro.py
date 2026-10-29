@@ -11,5 +11,8 @@ class Tesoro(Objeto):
     def valor_monetario(self) -> int:
         return self._valor_monetario
 
+    def a_dict(self) -> dict:
+        return {**super().a_dict(), "valor_monetario": self._valor_monetario}
+
     def describir(self) -> str:
         return f"{self.nombre} - Valor: {self.valor_monetario} puntos de commit"

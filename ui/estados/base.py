@@ -19,6 +19,9 @@ class Estado(ABC):
     def actualizar(self, dt: float) -> None:
         pass
 
+    def al_cerrar(self) -> None:
+        pass  # la ventana se cierra; los estados con partida la guardan
+
     @abstractmethod
     def dibujar(self, superficie) -> None:
         pass

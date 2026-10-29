@@ -24,7 +24,13 @@ El proyecto se dividirá en varias fases, comenzando con la creación de clases 
 
 ## Historia y mundo del juego
 
-Eres un estudiante de primer semestre que se quedó dormido estudiando para el parcial de programación. En el sueño, el código que escribiste a las 3 a. m. cobra vida: cada error se convirtió en un enemigo y el programa entero es un mundo roto que debes recorrer y depurar antes de que suene el despertador.
+Son las 3:07 a. m. y el parcial de programación es a las 7. Te quedas dormido sobre el teclado y despiertas dentro de tu propio código: **el Reino del Código**, donde cada línea es tierra y cada función, un camino.
+
+Allí te recibe el **Pato de Goma**, el confidente al que los programadores le explican sus errores, que te reconoce como **el Depurador**. El reino se está rompiendo: variables que apuntan a la nada, bucles sin salida y memoria que se escapa. Todos los bugs obedecen a **El Legacy Code**, el primer programa del reino. Su autor se fue sin dejar un solo comentario; nadie lo entendió y ahora temen reemplazarlo. Su plan es volver todo el reino tan ilegible como él, porque *si nadie puede leerlo, nadie podrá borrarlo*.
+
+Tu misión es vencer a sus bugs, equiparte en la tienda del Stack Overflow y llegar a su guarida en la esquina más oscura del mapa. No se trata de destruirlo sino de **refactorizarlo**: entender por fin el código que todos evitaron. Todo antes de que suene el despertador.
+
+El guion completo (intro, aparición del jefe y finales) está en `mundo/historia.py`.
 
 El mundo sigue la estructura de un Zelda clásico, con vista superior: un **Escritorio** central (el hub) conecta con cuatro zonas. Cada zona enseña un concepto de programación, lo convierte en una mecánica de juego y entrega una **herramienta** que abre la puerta de la siguiente.
 
@@ -173,7 +179,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 | R8.1 Interfaz | ✅ | HUD con vida, nivel, commits e inventario |
 | R8.2 Retroalimentación | ✅ | Mensajes en el HUD y sonidos generados por código (`ui/sonido.py`) |
 | R9.1 Pantalla principal | ✅ | Menú con Nueva partida, Cómo jugar y Salir |
-| R9.2 Estados del juego | 🟡 | Menú, jugando, pausa, tienda y fin; falta el estado minijuego |
+| R9.2 Estados del juego | 🟡 | Menú, intro, jugando, pausa, tienda y fin; falta el estado minijuego |
 | R10.1 Movimiento fluido | ✅ | Caminata animada, dirección y tecla sostenida |
 | R10.2 Enemigos con comportamiento | ✅ | Patrullar, perseguir y quieto (patrón Strategy) |
 | R11.1 Mundo por zonas | ⬜ | |
@@ -215,7 +221,7 @@ Estos requerimientos amplían los anteriores con la historia y el mundo descrito
 
 #### Patrones de diseño
 
-- **State** (`ui/estados/`): cada pantalla (menú, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
+- **State** (`ui/estados/`): cada pantalla (menú, intro, cómo jugar, jugando, pausa, tienda) es una subclase de `Estado`. La `Aplicacion` solo le delega eventos, actualización y dibujo, sin saber en qué pantalla está.
 - **Strategy** (`models/comportamiento.py`): cada enemigo tiene un `Comportamiento` intercambiable (`Patrullar`, `Perseguir`, `Quieto`). Los terrestres patrullan, los voladores persiguen y el jefe sobrescribe `comportamiento_por_defecto()` para quedarse quieto.
 
 #### Diagrama de clases
@@ -227,6 +233,12 @@ El diagrama se genera con Graphviz desde [`docs/diagrama_clases.dot`](./docs/dia
 ```bash
 dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
 ```
+
+## Jugar en el navegador
+
+[**mastercelta.github.io/lpa1-taller-videojuegos**](https://mastercelta.github.io/lpa1-taller-videojuegos/)
+
+Cada push a `main` compila el juego para la web con [pygbag](https://pypi.org/project/pygbag/) (Python + Pygame en WebAssembly) y lo publica en GitHub Pages (`.github/workflows/web.yml`). La partida se guarda en el navegador.
 
 ## Instalación
 
@@ -272,7 +284,11 @@ dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
     | R | Reiniciar la partida al terminar |
     | ESC | Pausa durante la partida; volver o salir en los menús |
 
-3. Ejecutar las pruebas
+3. Autosave
+
+    La partida se guarda sola cada 5 segundos, después de cada acción (combate, recoger, comprar) y al cerrar la ventana. Al volver a abrir el juego aparece **Continuar** en el menú. Se guarda en `partida_guardada.json` (en la versión web, en el navegador). Al ganar o perder, el guardado se borra.
+
+4. Ejecutar las pruebas
 
     ```bash
     python3 -m pytest tests/ -v

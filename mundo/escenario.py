@@ -140,3 +140,35 @@ class Escenario:
 
     def en_zona_venta(self, x: int, y: int) -> bool:
         return (x, y) == self._zona_venta
+
+    def a_dict(self) -> dict:
+        lista = lambda celdas: [list(c) for c in sorted(celdas)]
+        return {
+            "ancho": self._ancho, "alto": self._alto,
+            "zona_venta": list(self._zona_venta),
+            "reservadas": lista(self._reservadas),
+            "visitadas": lista(self._celdas_visitadas),
+            "reveladas": lista(self._celdas_reveladas),
+            "obstaculos": lista(self._obstaculos),
+            "enemigos": [e.a_dict() | {"celda": list(p)} for p, e in self._enemigos.items()],
+            "objetos": [o.a_dict() | {"celda": list(p)} for p, o in self._objetos.items()],
+        }
+
+    def restaurar(self, datos: dict) -> None:
+        from models.fabrica import enemigo_desde_dict, objeto_desde_dict
+        conjunto = lambda celdas: {tuple(c) for c in celdas}
+        self._zona_venta = tuple(datos["zona_venta"])
+        self._reservadas = conjunto(datos["reservadas"])
+        self._celdas_visitadas = conjunto(datos["visitadas"])
+        self._celdas_reveladas = conjunto(datos["reveladas"])
+        self._obstaculos = conjunto(datos["obstaculos"])
+        self._enemigos = {}
+        for d in datos["enemigos"]:
+            d = dict(d)
+            celda = tuple(d.pop("celda"))
+            self._enemigos[celda] = enemigo_desde_dict(d)
+        self._objetos = {}
+        for d in datos["objetos"]:
+            d = dict(d)
+            celda = tuple(d.pop("celda"))
+            self._objetos[celda] = objeto_desde_dict(d)
