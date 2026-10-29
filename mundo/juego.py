@@ -41,6 +41,25 @@ class Juego:
         self.probabilidad_esquivar = PROBABILIDAD_ESQUIVAR
         self._eventos = []
 
+    def a_dict(self) -> dict:
+        return {
+            "version": 1,
+            "escenario": self._escenario.a_dict(),
+            "personaje": self._personaje.a_dict(),
+            "mensaje": self._mensaje,
+        }
+
+    @classmethod
+    def desde_dict(cls, datos: dict) -> "Juego":
+        # Autosave: se arma una partida nueva y se le reemplaza el estado por el guardado
+        escenario = datos["escenario"]
+        juego = cls(escenario["ancho"], escenario["alto"])
+        juego._escenario.restaurar(escenario)
+        juego._personaje.restaurar(datos["personaje"])
+        juego._jefe = next((e for e in juego._escenario.enemigos.values() if type(e).__name__ == "EnemigoJefe"), None)
+        juego._mensaje = "Partida recuperada. " + datos.get("mensaje", "")
+        return juego
+
     @property
     def ancho(self) -> int:
         return self._ancho

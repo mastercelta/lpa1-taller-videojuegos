@@ -31,3 +31,61 @@ def test_el_personaje_conserva_progreso_e_inventario():
     copia = Personaje("x")
     copia.restaurar(p.a_dict())
     assert copia.a_dict() == p.a_dict()
+
+
+class AlmacenMemoria:
+    def __init__(self):
+        self.texto = ""
+
+    def leer(self):
+        return self.texto
+
+    def escribir(self, texto):
+        self.texto = texto
+
+    def borrar(self):
+        self.texto = ""
+
+
+def test_guardar_y_cargar_una_partida_completa():
+    from mundo.guardado import Guardado
+    from mundo.juego import Juego
+    juego = Juego()
+    juego.personaje.ganar_puntos_commit(40)
+    juego.escenario.visitar(1, 0)
+    guardado = Guardado(AlmacenMemoria())
+    guardado.guardar(juego)
+    copia = guardado.cargar()
+    assert copia.personaje.a_dict() == juego.personaje.a_dict()
+    assert copia.escenario.a_dict() == juego.escenario.a_dict()
+    assert copia.jefe is not None and copia.jefe.nombre == juego.jefe.nombre
+    assert copia.jefe in copia.escenario.enemigos.values()
+
+
+def test_una_partida_terminada_borra_el_guardado():
+    from mundo.guardado import Guardado
+    from mundo.juego import Juego
+    guardado = Guardado(AlmacenMemoria())
+    juego = Juego()
+    guardado.guardar(juego)
+    assert guardado.hay_partida()
+    juego._resultado = "derrota"
+    guardado.guardar(juego)
+    assert not guardado.hay_partida()
+
+
+def test_un_guardado_dañado_se_ignora():
+    from mundo.guardado import Guardado
+    almacen = AlmacenMemoria()
+    almacen.texto = "{no es json"
+    assert Guardado(almacen).cargar() is None
+
+
+def test_el_archivo_se_escribe_y_se_borra(tmp_path):
+    from mundo.guardado import AlmacenArchivo, Guardado
+    from mundo.juego import Juego
+    guardado = Guardado(AlmacenArchivo(str(tmp_path / "p.json")))
+    guardado.guardar(Juego())
+    assert guardado.hay_partida()
+    guardado.borrar()
+    assert not guardado.hay_partida()
