@@ -9,9 +9,9 @@ COLOR_RESALTE = (240, 210, 60)
 
 SECCIONES = [
     ("La historia", [
-        "Te dormiste estudiando para el parcial de programación.",
-        "Tu código roto cobró vida: cada error es un enemigo.",
-        "Depúralo todo antes de que suene el despertador.",
+        "Te dormiste antes del parcial y despertaste en el Reino del Código.",
+        "El Legacy Code, el programa más viejo y sin documentar, lo está rompiendo.",
+        "Guiado por el Pato de Goma, depúralo antes de que suene el despertador.",
     ]),
     ("Controles", [
         "Flechas: moverte   |   ESC: pausa",
