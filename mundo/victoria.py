@@ -1,15 +1,17 @@
+from mundo.historia import FINAL_EXPLORACION, FINAL_JEFE, FINAL_PUNTAJE
+
 UMBRAL_EXPLORACION = 0.6
 UMBRAL_PUNTAJE = 100  # alcanzable con los bugs y tesoros, sin vencer al jefe
 
 
 def verificar_victoria(personaje, escenario, jefe) -> str:
     if jefe is not None and not jefe.esta_vivo():
-        return f"¡Venciste a {jefe.nombre}! Depuraste el sueño por completo."  # R7.2
+        return FINAL_JEFE  # R7.2
 
     if escenario.porcentaje_explorado() >= UMBRAL_EXPLORACION:
-        return "¡Exploraste todo el escritorio! El sueño termina en paz."  # R7.1
+        return FINAL_EXPLORACION  # R7.1
 
     if personaje.puntos_commit_ganados >= UMBRAL_PUNTAJE:
-        return f"¡Alcanzaste {UMBRAL_PUNTAJE} puntos de commit! Despiertas satisfecho."  # R7.3
+        return FINAL_PUNTAJE.format(UMBRAL_PUNTAJE)  # R7.3
 
     return ""

@@ -12,6 +12,7 @@ from tests.test_guardado import AlmacenMemoria
 from ui.aplicacion import Aplicacion
 from ui.estados.base import Estado
 from ui.estados.como_jugar import EstadoComoJugar
+from ui.estados.intro import EstadoIntro
 from ui.estados.jugando import EstadoJugando
 from ui.estados.menu import EstadoMenu
 from ui.estados.pausa import EstadoPausa
@@ -34,6 +35,11 @@ def tecla(aplicacion, key):
     aplicacion.procesar([pygame.event.Event(pygame.KEYDOWN, key=key)], 0.016, superficie)
 
 
+def jugar(app):
+    tecla(app, pygame.K_RETURN)
+    tecla(app, pygame.K_ESCAPE)  # salta la intro
+
+
 def test_estado_es_abstracto():
     with pytest.raises(TypeError):
         Estado(None)
@@ -41,7 +47,7 @@ def test_estado_es_abstracto():
 
 def test_todas_las_pantallas_son_estados(app):
     jugando = EstadoJugando(app)
-    for estado in (EstadoMenu(app), EstadoComoJugar(app), jugando, EstadoPausa(app, jugando), EstadoTienda(app, jugando)):
+    for estado in (EstadoMenu(app), EstadoComoJugar(app), EstadoIntro(app), jugando, EstadoPausa(app, jugando), EstadoTienda(app, jugando)):
         assert isinstance(estado, Estado)
 
 
@@ -52,8 +58,19 @@ def test_el_menu_navega_en_circulo(app):
     assert app.estado.seleccion == 0
 
 
-def test_nueva_partida_entra_a_jugar(app):
+def test_nueva_partida_muestra_la_intro_y_luego_juega(app):
+    from mundo.historia import INTRO
     tecla(app, pygame.K_RETURN)
+    assert isinstance(app.estado, EstadoIntro)
+    for _ in INTRO:
+        tecla(app, pygame.K_RETURN)  # completa el texto
+        tecla(app, pygame.K_RETURN)  # pasa al siguiente diálogo
+    assert isinstance(app.estado, EstadoJugando)
+
+
+def test_la_intro_se_puede_saltar(app):
+    tecla(app, pygame.K_RETURN)
+    tecla(app, pygame.K_ESCAPE)
     assert isinstance(app.estado, EstadoJugando)
 
 
@@ -72,7 +89,7 @@ def test_salir_desde_el_menu(app):
 
 
 def test_pausa_conserva_la_partida(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     jugando = app.estado
     jugando.juego.mover(1, 0)
     posicion = jugando.juego.personaje.posicion
@@ -84,7 +101,7 @@ def test_pausa_conserva_la_partida(app):
 
 
 def test_desde_la_pausa_se_vuelve_al_menu(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     tecla(app, pygame.K_ESCAPE)
     tecla(app, pygame.K_DOWN)
     tecla(app, pygame.K_RETURN)
@@ -92,14 +109,14 @@ def test_desde_la_pausa_se_vuelve_al_menu(app):
 
 
 def test_al_terminar_la_partida_enter_vuelve_al_menu(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     app.estado.juego._resultado = "derrota"
     tecla(app, pygame.K_RETURN)
     assert isinstance(app.estado, EstadoMenu)
 
 
 def test_la_tienda_compra_equipa_y_vuelve_a_la_partida(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     jugando = app.estado
     juego = jugando.juego
     juego.personaje.mover(*juego.escenario.zona_venta)
@@ -116,7 +133,7 @@ def test_la_tienda_compra_equipa_y_vuelve_a_la_partida(app):
 
 
 def test_la_t_abre_la_tienda_solo_en_la_zona_de_venta(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     jugando = app.estado
     tecla(app, pygame.K_t)
     assert app.estado is jugando
@@ -127,7 +144,7 @@ def test_la_t_abre_la_tienda_solo_en_la_zona_de_venta(app):
 
 def test_espacio_activa_la_trampa(app):
     from models.trampa_explosiva import TrampaExplosiva
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     juego = app.estado.juego
     juego.personaje.recolectar(TrampaExplosiva("SyntaxError", alcance_explosion=1, daño_explosion=12))
     tecla(app, pygame.K_SPACE)
@@ -144,7 +161,7 @@ def test_hay_un_sonido_por_cada_evento():
 
 def test_autosave_y_continuar_desde_el_menu(app):
     assert app.estado.opciones[0] == "Nueva partida"
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     jugando = app.estado
     jugando.juego.mover(0, 1)
     jugando.juego.personaje.ganar_puntos_commit(33)
@@ -158,7 +175,7 @@ def test_autosave_y_continuar_desde_el_menu(app):
 
 
 def test_cerrar_la_ventana_guarda_la_partida(app):
-    tecla(app, pygame.K_RETURN)
+    jugar(app)
     app.estado.juego.personaje.ganar_puntos_commit(12)
     superficie = pygame.Surface(app.tamaño)
     app.procesar([pygame.event.Event(pygame.QUIT)], 0.016, superficie)

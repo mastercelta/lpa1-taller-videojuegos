@@ -64,7 +64,8 @@ class EstadoMenu(Estado):
         if opcion == "Continuar":
             self.aplicacion.cambiar_estado(EstadoJugando(self.aplicacion, self._partida))
         elif opcion == "Nueva partida":
-            self.aplicacion.cambiar_estado(EstadoJugando(self.aplicacion))
+            from ui.estados.intro import EstadoIntro
+            self.aplicacion.cambiar_estado(EstadoIntro(self.aplicacion))
         elif opcion == "Cómo jugar":
             self.aplicacion.cambiar_estado(EstadoComoJugar(self.aplicacion))
         else:

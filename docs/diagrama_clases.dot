@@ -88,6 +88,11 @@ digraph Clases {
     EstadoJugando [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoJugando</b></td></tr><tr><td align="left">_juego: Juego<br align="left"/></td></tr></table>>];
     EstadoPausa [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoPausa</b></td></tr></table>>];
     EstadoTienda [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoTienda</b></td></tr><tr><td align="left">elementos(): list<br align="left"/></td></tr></table>>];
+    EstadoIntro [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>EstadoIntro</b></td></tr><tr><td align="left">_dialogos: list<br align="left"/></td></tr></table>>];
+    Guardado [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#fdf0d5"><b>Guardado</b></td></tr><tr><td align="left">guardar(juego)<br align="left"/>cargar(): Juego<br align="left"/>borrar()<br align="left"/></td></tr></table>>];
+    Almacen [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><i><b>Almacen</b></i><br/>«Strategy»</td></tr><tr><td align="left"><i>leer(): str</i><br align="left"/><i>escribir(texto)</i><br align="left"/><i>borrar()</i><br align="left"/></td></tr></table>>];
+    AlmacenArchivo [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><b>AlmacenArchivo</b></td></tr></table>>];
+    AlmacenNavegador [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#e8f5e1"><b>AlmacenNavegador</b></td></tr></table>>];
     Sonidos [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4"><tr><td bgcolor="#f3e3f7"><b>Sonidos</b></td></tr><tr><td align="left">_sonidos: dict<br align="left"/></td></tr><tr><td align="left">reproducir(nombre)<br align="left"/></td></tr></table>>];
 
     edge [arrowhead=empty];
@@ -95,7 +100,7 @@ digraph Clases {
     EnemigoBug -> Enemigo; Bugs -> EnemigoBug; EnemigoJefe -> EnemigoBug;
     Tesoro -> Objeto; TrampaExplosiva -> Objeto; Armamento -> Objeto;
     Quieto -> Comportamiento; Patrullar -> Comportamiento; Perseguir -> Comportamiento;
-    EstadoMenu -> Estado; EstadoComoJugar -> Estado; EstadoJugando -> Estado; EstadoPausa -> Estado; EstadoTienda -> Estado;
+    EstadoMenu -> Estado; EstadoComoJugar -> Estado; EstadoJugando -> Estado; EstadoPausa -> Estado; EstadoTienda -> Estado; EstadoIntro -> Estado; AlmacenArchivo -> Almacen; AlmacenNavegador -> Almacen;
 
     edge [arrowhead=none, dir=back];
     Comportamiento -> Enemigo [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
@@ -108,6 +113,8 @@ digraph Clases {
     Armamento -> Tienda [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1..*", label="catálogo"];
     Estado -> Aplicacion [arrowhead=odiamond, dir=forward, headlabel="1", taillabel="1", label="estado actual"];
     Juego -> EstadoJugando [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Guardado -> Aplicacion [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
+    Almacen -> Guardado [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
     Sonidos -> EstadoJugando [arrowhead=diamond, dir=forward, headlabel="1", taillabel="1"];
 
     edge [arrowhead=vee, dir=forward, style=dashed, arrowtail=none];
