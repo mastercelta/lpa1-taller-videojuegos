@@ -1,3 +1,5 @@
+import asyncio
+
 import pygame
 
 from mundo.guardado import Guardado
@@ -45,7 +47,8 @@ class Aplicacion:
         self._estado.actualizar(dt)
         self._estado.dibujar(superficie)
 
-    def ejecutar(self, crear_estado_inicial) -> None:
+    async def ejecutar(self, crear_estado_inicial) -> None:
+        # async para que la versión web (pygbag) le devuelva el control al navegador en cada cuadro
         pygame.init()
         ventana = pygame.display.set_mode(self._tamaño)
         pygame.display.set_caption(self._titulo)
@@ -56,4 +59,5 @@ class Aplicacion:
             dt = reloj.tick(60) / 1000
             self.procesar(pygame.event.get(), dt, ventana)
             pygame.display.flip()
+            await asyncio.sleep(0)
         pygame.quit()

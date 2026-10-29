@@ -228,6 +228,12 @@ El diagrama se genera con Graphviz desde [`docs/diagrama_clases.dot`](./docs/dia
 dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
 ```
 
+## Jugar en el navegador
+
+[**mastercelta.github.io/lpa1-taller-videojuegos**](https://mastercelta.github.io/lpa1-taller-videojuegos/)
+
+Cada push a `main` compila el juego para la web con [pygbag](https://pypi.org/project/pygbag/) (Python + Pygame en WebAssembly) y lo publica en GitHub Pages (`.github/workflows/web.yml`). La partida se guarda en el navegador.
+
 ## Instalación
 
 1. Clonar el proyecto
