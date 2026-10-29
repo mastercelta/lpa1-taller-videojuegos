@@ -272,7 +272,11 @@ dot -Tpng docs/diagrama_clases.dot -o docs/diagramas.png
     | R | Reiniciar la partida al terminar |
     | ESC | Pausa durante la partida; volver o salir en los menús |
 
-3. Ejecutar las pruebas
+3. Autosave
+
+    La partida se guarda sola cada 5 segundos, después de cada acción (combate, recoger, comprar) y al cerrar la ventana. Al volver a abrir el juego aparece **Continuar** en el menú. Se guarda en `partida_guardada.json` (en la versión web, en el navegador). Al ganar o perder, el guardado se borra.
+
+4. Ejecutar las pruebas
 
     ```bash
     python3 -m pytest tests/ -v

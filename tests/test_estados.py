@@ -7,6 +7,8 @@ import pygame
 import pytest
 
 from mundo.juego import Juego
+from mundo.guardado import Guardado
+from tests.test_guardado import AlmacenMemoria
 from ui.aplicacion import Aplicacion
 from ui.estados.base import Estado
 from ui.estados.como_jugar import EstadoComoJugar
@@ -20,7 +22,7 @@ from ui.vista import tamaño_ventana
 @pytest.fixture
 def app():
     pygame.init()
-    aplicacion = Aplicacion(tamaño_ventana(Juego()), "test")
+    aplicacion = Aplicacion(tamaño_ventana(Juego()), "test", Guardado(AlmacenMemoria()))
     aplicacion._ejecutando = True
     aplicacion.cambiar_estado(EstadoMenu(aplicacion))
     yield aplicacion
@@ -138,3 +140,26 @@ def test_hay_un_sonido_por_cada_evento():
     for nombre in ("golpe", "daño", "esquivar", "derrotar", "recoger", "comprar", "error", "explosion", "victoria", "derrota"):
         assert nombre in MELODIAS
         sonidos.reproducir(nombre)
+
+
+def test_autosave_y_continuar_desde_el_menu(app):
+    assert app.estado.opciones[0] == "Nueva partida"
+    tecla(app, pygame.K_RETURN)
+    jugando = app.estado
+    jugando.juego.mover(0, 1)
+    jugando.juego.personaje.ganar_puntos_commit(33)
+    tecla(app, pygame.K_ESCAPE)
+    tecla(app, pygame.K_DOWN)
+    tecla(app, pygame.K_RETURN)
+    menu = app.estado
+    assert menu.opciones[0] == "Continuar"
+    tecla(app, pygame.K_RETURN)
+    assert app.estado.juego.personaje.puntos_commit == 33
+
+
+def test_cerrar_la_ventana_guarda_la_partida(app):
+    tecla(app, pygame.K_RETURN)
+    app.estado.juego.personaje.ganar_puntos_commit(12)
+    superficie = pygame.Surface(app.tamaño)
+    app.procesar([pygame.event.Event(pygame.QUIT)], 0.016, superficie)
+    assert app.guardado.cargar().personaje.puntos_commit == 12

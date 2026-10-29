@@ -29,6 +29,8 @@ class EstadoMenu(Estado):
     def __init__(self, aplicacion):
         super().__init__(aplicacion)
         self._seleccion = 0
+        self._partida = aplicacion.guardado.cargar()
+        self._opciones = (("Continuar",) if self._partida else ()) + self.OPCIONES
         self._fuente_titulo = pygame.font.SysFont("arial", 40, bold=True)
         self._fuente_sub = pygame.font.SysFont("arial", 18, italic=True)
         self._fuente_opcion = pygame.font.SysFont("arial", 26)
@@ -38,13 +40,17 @@ class EstadoMenu(Estado):
     def seleccion(self) -> int:
         return self._seleccion
 
+    @property
+    def opciones(self) -> tuple:
+        return self._opciones
+
     def manejar_evento(self, evento) -> None:
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key == pygame.K_UP:
-            self._seleccion = (self._seleccion - 1) % len(self.OPCIONES)
+            self._seleccion = (self._seleccion - 1) % len(self._opciones)
         elif evento.key == pygame.K_DOWN:
-            self._seleccion = (self._seleccion + 1) % len(self.OPCIONES)
+            self._seleccion = (self._seleccion + 1) % len(self._opciones)
         elif evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
             self._elegir()
         elif evento.key == pygame.K_ESCAPE:
@@ -54,8 +60,10 @@ class EstadoMenu(Estado):
         from ui.estados.como_jugar import EstadoComoJugar
         from ui.estados.jugando import EstadoJugando
 
-        opcion = self.OPCIONES[self._seleccion]
-        if opcion == "Nueva partida":
+        opcion = self._opciones[self._seleccion]
+        if opcion == "Continuar":
+            self.aplicacion.cambiar_estado(EstadoJugando(self.aplicacion, self._partida))
+        elif opcion == "Nueva partida":
             self.aplicacion.cambiar_estado(EstadoJugando(self.aplicacion))
         elif opcion == "Cómo jugar":
             self.aplicacion.cambiar_estado(EstadoComoJugar(self.aplicacion))
@@ -80,7 +88,7 @@ class EstadoMenu(Estado):
         sub = self._fuente_sub.render("El Sueño del Programador", True, COLOR_SUBTITULO)
         superficie.blit(sub, sub.get_rect(center=(ancho // 2, alto // 4 + 40)))
 
-        for i, opcion in enumerate(self.OPCIONES):
+        for i, opcion in enumerate(self._opciones):
             elegida = i == self._seleccion
             texto = f"> {opcion} <" if elegida else opcion
             color = COLOR_SELECCION if elegida else COLOR_OPCION
