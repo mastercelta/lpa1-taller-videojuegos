@@ -233,5 +233,7 @@ def test_el_jefe_habla_la_primera_vez_que_sale_de_la_niebla():
     juego.personaje.mover(juego.ancho - 4, juego.alto - 1)
     juego.mover(1, 0)
     assert juego.mensaje == AVISTAR_JEFE
+    juego._mensaje = ""
     juego.mover(-1, 0)
-    assert juego.mensaje != AVISTAR_JEFE
+    juego.mover(1, 0)
+    assert juego.mensaje == ""
