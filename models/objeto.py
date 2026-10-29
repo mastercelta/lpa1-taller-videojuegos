@@ -15,6 +15,10 @@ class Objeto(ABC):
     def descripcion(self) -> str:
         return self._descripcion
 
+    def a_dict(self) -> dict:
+        # Autosave: cada subclase agrega sus propios datos (polimorfismo)
+        return {"clase": type(self).__name__, "nombre": self._nombre, "descripcion": self._descripcion}
+
     @abstractmethod
     def describir(self) -> str:
         pass

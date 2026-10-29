@@ -47,5 +47,9 @@ class Enemigo(Entidad):
     def puntos_commit_otorgados(self) -> int:
         return self._puntos_commit_otorgados
 
+    def a_dict(self) -> dict:
+        return {**super().a_dict(), "tipo": self._tipo, "experiencia_otorgada": self._experiencia_otorgada,
+                "puntos_commit_otorgados": self._puntos_commit_otorgados}
+
     def describir(self) -> str:
         return f"{self.nombre} ({self.tipo}) - Vida: {self.vida}/{self.vida_maxima} | Ataque: {self.ataque} | Defensa: {self.defensa}"

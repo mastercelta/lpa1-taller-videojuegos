@@ -22,5 +22,8 @@ class TrampaExplosiva(Objeto):
             resultados[objetivo.nombre] = objetivo.recibir_daño(self.daño_explosion)  # R5.3: efecto especial
         return resultados
 
+    def a_dict(self) -> dict:
+        return {**super().a_dict(), "alcance_explosion": self._alcance_explosion, "daño_explosion": self._daño_explosion}
+
     def describir(self) -> str:
         return f"{self.nombre} - Alcance: {self.alcance_explosion} | Daño: {self.daño_explosion}"
